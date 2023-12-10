@@ -11,6 +11,8 @@ public final class CommandInput {
     private Integer playlistId; // pentru add/remove song
     private String playlistName; // pentru create playlist
     private Integer seed; // pentru shuffle
+    private Integer age; // pentru age
+    private String city; // pentru city
 
     public CommandInput() {
     }
@@ -93,6 +95,22 @@ public final class CommandInput {
 
     public void setSeed(final Integer seed) {
         this.seed = seed;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     @Override

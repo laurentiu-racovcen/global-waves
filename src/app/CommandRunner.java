@@ -497,7 +497,7 @@ public final class CommandRunner {
 
         return objectNode;
     }
-
+    // TODO ADD JAVADOC
     public static ObjectNode switchConnectionStatus(final CommandInput commandInput) {
         User user = Admin.getUser(commandInput.getUsername());
         String message;
@@ -514,7 +514,7 @@ public final class CommandRunner {
 
         return objectNode;
     }
-
+    // TODO ADD JAVADOC
     public static ObjectNode getOnlineUsers(final CommandInput commandInput) {
         User user = Admin.getUser(commandInput.getUsername());
         List<String> result = new ArrayList<>();
@@ -529,6 +529,18 @@ public final class CommandRunner {
         objectNode.put("command", commandInput.getCommand());
         objectNode.put("timestamp", commandInput.getTimestamp());
         objectNode.put("result", objectMapper.valueToTree(result));
+
+        return objectNode;
+    }
+
+    public static ObjectNode addUser(final CommandInput commandInput) {
+        String message = Admin.addUser(commandInput);
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
 
         return objectNode;
     }

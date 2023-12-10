@@ -25,7 +25,7 @@ public class Artist extends User {
      * @param age      the age
      * @param city     the city
      */
-    public Artist(String username, int age, String city) {
-        super(username, age, city);
+    public Artist(final String username, final int age, final String city) {
+        super(username, age, city, Enums.UserType.ARTIST);
     }
 }

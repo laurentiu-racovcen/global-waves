@@ -64,6 +64,27 @@ public class User {
     }
 
     /**
+     * Initiates a new Host/Artist user
+     * @param username
+     * @param age
+     * @param city
+     * @param userType
+     */
+    public User(final String username, final int age, final String city, final Enums.UserType userType) {
+        this.username = username;
+        this.age = age;
+        this.city = city;
+        playlists = new ArrayList<>();
+        likedSongs = new ArrayList<>();
+        followedPlaylists = new ArrayList<>();
+        player = new Player();
+        searchBar = new SearchBar(username);
+        lastSearched = false;
+        connectionStatus = Enums.ConnectionStatus.ONLINE;
+        type = userType;
+    }
+
+    /**
      * Search array list.
      *
      * @param filters the filters

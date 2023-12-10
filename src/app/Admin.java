@@ -4,11 +4,10 @@ import app.audio.Collections.Playlist;
 import app.audio.Collections.Podcast;
 import app.audio.Files.Episode;
 import app.audio.Files.Song;
+import app.user.Artist;
+import app.user.Host;
 import app.user.User;
-import fileio.input.EpisodeInput;
-import fileio.input.PodcastInput;
-import fileio.input.SongInput;
-import fileio.input.UserInput;
+import fileio.input.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -187,5 +186,29 @@ public final class Admin {
         songs = new ArrayList<>();
         podcasts = new ArrayList<>();
         timestamp = 0;
+    }
+
+    /**
+     * Adds new user
+     * @param commandInput
+     * @return message
+     */
+    public static String addUser(final CommandInput commandInput) {
+
+        for (User user : users) {
+            if (user.getUsername().equals(commandInput.getUsername())) {
+                return "The username" + commandInput.getUsername() + " is already taken.";
+            }
+        }
+
+        if (commandInput.getType().equals("artist")) {
+            Admin.users.add(new Artist(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
+        } else if (commandInput.getType().equals("host")) {
+            Admin.users.add(new Host(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
+        } else {
+            Admin.users.add(new User(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
+        }
+
+        return "The username" + commandInput.getUsername() + " has been added successfully.";
     }
 }

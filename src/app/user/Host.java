@@ -25,7 +25,7 @@ public class Host extends User {
      * @param age      the age
      * @param city     the city
      */
-    public Host(String username, int age, String city) {
-        super(username, age, city);
+    public Host(final String username, final int age, final String city) {
+        super(username, age, city, Enums.UserType.HOST);
     }
 }
