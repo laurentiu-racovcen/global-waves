@@ -1,5 +1,9 @@
 package fileio.input;
 
+import app.audio.Files.Song;
+
+import java.util.ArrayList;
+
 public final class CommandInput {
     private String command;
     private String username;
@@ -13,6 +17,10 @@ public final class CommandInput {
     private Integer seed; // pentru shuffle
     private Integer age; // pentru age
     private String city; // pentru city
+    private String name; // pentru add Album
+    private int releaseYear;
+    private String description;
+    private ArrayList<Song> songs;
 
     public CommandInput() {
     }
@@ -111,6 +119,38 @@ public final class CommandInput {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(int releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ArrayList<Song> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(ArrayList<Song> songs) {
+        this.songs = songs;
     }
 
     @Override

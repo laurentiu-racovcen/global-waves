@@ -1,5 +1,6 @@
 package app.audio.Files;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -30,9 +31,14 @@ public final class Song extends AudioFile {
      * @param releaseYear the release year
      * @param artist      the artist
      */
-    public Song(final String name, final Integer duration, final String album,
-                final ArrayList<String> tags, final String lyrics, final String genre,
-                final Integer releaseYear, final String artist) {
+    public Song (@JsonProperty("name") final String name,
+                 @JsonProperty("duration") final Integer duration,
+                 @JsonProperty("album") final String album,
+                 @JsonProperty("tags") final ArrayList<String> tags,
+                 @JsonProperty("lyrics") final String lyrics,
+                 @JsonProperty("genre") final String genre,
+                 @JsonProperty("releaseYear") final Integer releaseYear,
+                 @JsonProperty("artist") final String artist) {
         super(name, duration);
         this.album = album;
         this.tags = tags;

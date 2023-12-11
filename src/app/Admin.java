@@ -1,12 +1,15 @@
 package app;
 
+import app.audio.Collections.Album;
 import app.audio.Collections.Playlist;
 import app.audio.Collections.Podcast;
 import app.audio.Files.Episode;
 import app.audio.Files.Song;
 import app.user.Artist;
 import app.user.Host;
+import app.user.NormalUser;
 import app.user.User;
+import app.utils.Enums;
 import fileio.input.*;
 import lombok.Getter;
 
@@ -18,14 +21,23 @@ import java.util.List;
  * The type Admin.
  */
 public final class Admin {
+    private static Admin adminInstance = null;
     @Getter
     private static List<User> users = new ArrayList<>();
     private static List<Song> songs = new ArrayList<>();
     private static List<Podcast> podcasts = new ArrayList<>();
+    private static List<Album> albums = new ArrayList<>();
     private static int timestamp = 0;
     private static final int LIMIT = 5;
 
     private Admin() {
+    }
+
+    public static Admin getInstance() {
+        if (adminInstance == null) {
+            adminInstance = new Admin();
+        }
+        return adminInstance;
     }
 
     /**
@@ -33,10 +45,10 @@ public final class Admin {
      *
      * @param userInputList the user input list
      */
-    public static void setUsers(final List<UserInput> userInputList) {
+    public void setUsers(final List<UserInput> userInputList) {
         users = new ArrayList<>();
         for (UserInput userInput : userInputList) {
-            users.add(new User(userInput.getUsername(), userInput.getAge(), userInput.getCity()));
+            users.add(new NormalUser(userInput.getUsername(), userInput.getAge(), userInput.getCity()));
         }
     }
 
@@ -45,7 +57,7 @@ public final class Admin {
      *
      * @param songInputList the song input list
      */
-    public static void setSongs(final List<SongInput> songInputList) {
+    public void setSongs(final List<SongInput> songInputList) {
         songs = new ArrayList<>();
         for (SongInput songInput : songInputList) {
             songs.add(new Song(songInput.getName(), songInput.getDuration(), songInput.getAlbum(),
@@ -60,14 +72,14 @@ public final class Admin {
      *
      * @param podcastInputList the podcast input list
      */
-    public static void setPodcasts(final List<PodcastInput> podcastInputList) {
+    public void setPodcasts(final List<PodcastInput> podcastInputList) {
         podcasts = new ArrayList<>();
         for (PodcastInput podcastInput : podcastInputList) {
             List<Episode> episodes = new ArrayList<>();
             for (EpisodeInput episodeInput : podcastInput.getEpisodes()) {
                 episodes.add(new Episode(episodeInput.getName(),
-                                         episodeInput.getDuration(),
-                                         episodeInput.getDescription()));
+                         episodeInput.getDuration(),
+                         episodeInput.getDescription()));
             }
             podcasts.add(new Podcast(podcastInput.getName(), podcastInput.getOwner(), episodes));
         }
@@ -99,7 +111,9 @@ public final class Admin {
     public static List<Playlist> getPlaylists() {
         List<Playlist> playlists = new ArrayList<>();
         for (User user : users) {
-            playlists.addAll(user.getPlaylists());
+            if (user.getType().equals(Enums.UserType.NORMAL)) {
+                playlists.addAll(((NormalUser) user).getPlaylists());
+            }
         }
         return playlists;
     }
@@ -120,11 +134,21 @@ public final class Admin {
     }
 
     /**
+     * Gets albums.
+     *
+     * @return the albums
+     */
+    public static List<Album> getAlbums() {
+        return new ArrayList<>(albums);
+    }
+
+
+    /**
      * Update timestamp.
      *
      * @param newTimestamp the new timestamp
      */
-    public static void updateTimestamp(final int newTimestamp) {
+    public void updateTimestamp(final int newTimestamp) {
         int elapsed = newTimestamp - timestamp;
         timestamp = newTimestamp;
         if (elapsed == 0) {
@@ -132,7 +156,9 @@ public final class Admin {
         }
 
         for (User user : users) {
-            user.simulateTime(elapsed);
+            if (user.getType().equals(Enums.UserType.NORMAL)) {
+                ((NormalUser) user).simulateTime(elapsed);
+            }
         }
     }
 
@@ -181,7 +207,7 @@ public final class Admin {
     /**
      * Reset.
      */
-    public static void reset() {
+    public void reset() {
         users = new ArrayList<>();
         songs = new ArrayList<>();
         podcasts = new ArrayList<>();
@@ -197,7 +223,7 @@ public final class Admin {
 
         for (User user : users) {
             if (user.getUsername().equals(commandInput.getUsername())) {
-                return "The username" + commandInput.getUsername() + " is already taken.";
+                return "The username " + commandInput.getUsername() + " is already taken.";
             }
         }
 
@@ -206,9 +232,27 @@ public final class Admin {
         } else if (commandInput.getType().equals("host")) {
             Admin.users.add(new Host(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
         } else {
-            Admin.users.add(new User(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
+            Admin.users.add(new NormalUser(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
         }
 
-        return "The username" + commandInput.getUsername() + " has been added successfully.";
+        return "The username " + commandInput.getUsername() + " has been added successfully.";
+    }
+
+    /**
+     * Adds new song
+     * @param song
+     * @return message
+     */
+    public static void addSong(final Song song) {
+        songs.add(song);
+    }
+
+    /**
+     * Adds new album
+     * @param album
+     * @return message
+     */
+    public static void addAlbum(final Album album) {
+        albums.add(album);
     }
 }

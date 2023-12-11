@@ -1,8 +1,6 @@
 package app.user;
 
-import app.audio.Collections.AudioCollection;
-import app.audio.Collections.Playlist;
-import app.audio.Collections.PlaylistOutput;
+import app.audio.Collections.*;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
@@ -18,6 +16,9 @@ import java.util.List;
 
 public class Host extends User {
 
+    @Getter
+    private ArrayList<Podcast> podcasts;
+
     /**
      * Instantiates a new User.
      *
@@ -27,5 +28,6 @@ public class Host extends User {
      */
     public Host(final String username, final int age, final String city) {
         super(username, age, city, Enums.UserType.HOST);
+        podcasts = new ArrayList<>();
     }
 }
