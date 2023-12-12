@@ -30,7 +30,7 @@ public class ArtistPage extends Page {
                 albumNames = albumNames + albums.get(i).getName() + ", ";
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
-                albumNames = albumNames + albums.get(i).getName() + "]";
+                albumNames = albumNames + albums.get(i).getName();
             }
         }
         return albumNames;
@@ -47,7 +47,7 @@ public class ArtistPage extends Page {
                 /* daca este ultimul element din array, nu se pune virgula */
                 merchesContents = merchesContents + merches.get(i).getName() +
                         " - " + merches.get(i).getPrice() +
-                        ":\n\t" + merches.get(i).getDescription() + "]";
+                        ":\n\t" + merches.get(i).getDescription();
             }
         }
         return merchesContents;
@@ -64,7 +64,7 @@ public class ArtistPage extends Page {
                 /* daca este ultimul element din array, nu se pune virgula */
                 eventsContents = eventsContents + events.get(i).getName() +
                         " - " + events.get(i).getDate() +
-                        ":\n\t" + events.get(i).getDescription() + "]";
+                        ":\n\t" + events.get(i).getDescription();
             }
         }
         return eventsContents;
@@ -73,8 +73,8 @@ public class ArtistPage extends Page {
     @Override
     public String getPageContents() {
         String contents;
-        contents = "Albums:\n\t[" + getAlbumsString() + "\n\nMerch:\n\t[" +
-                getMerchesString() + "\n\nEvent:\n\t[" + getEventsString();
+        contents = "Albums:\n\t[" + getAlbumsString() + "]" + "\n\nMerch:\n\t[" +
+                getMerchesString() + "]" + "\n\nEvents:\n\t[" + getEventsString() + "]";
         return contents;
     }
 }

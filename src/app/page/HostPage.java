@@ -47,7 +47,7 @@ public class HostPage extends Page {
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
                 podcastsContents = podcastsContents + podcasts.get(i).getName() + ":\n\t[" +
-                        getEpisodesString((ArrayList<Episode>) podcasts.get(i).getEpisodes()) + "]";
+                        getEpisodesString((ArrayList<Episode>) podcasts.get(i).getEpisodes());
             }
         }
         return podcastsContents;
@@ -62,7 +62,7 @@ public class HostPage extends Page {
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
                 announcementsContents = announcementsContents + announcements.get(i).getName() + ":\n\t[" +
-                        announcements.get(i).getDescription() + "]";
+                        announcements.get(i).getDescription();
             }
         }
         return announcementsContents;
@@ -71,8 +71,8 @@ public class HostPage extends Page {
     @Override
     public String getPageContents() {
         String contents;
-        contents = "Podcasts:\n\t[" + getPodcastsString() +
-                "\n\nAnnouncements:\n\t[" + getAnnouncementsString();
+        contents = "Podcasts:\n\t[" + getPodcastsString() + "]"
+                + "\n\nAnnouncements:\n\t[" + getAnnouncementsString() + "]";
         return contents;
     }
 }

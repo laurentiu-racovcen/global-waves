@@ -101,6 +101,16 @@ public abstract class LibraryEntry {
     }
 
     /**
+     * Matches description boolean.
+     *
+     * @param description the description
+     * @return the boolean
+     */
+    public boolean matchesDescription(final String description) {
+        return false;
+    }
+
+    /**
      * Is visible to user boolean.
      *
      * @param user the user

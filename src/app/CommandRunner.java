@@ -604,6 +604,10 @@ public final class CommandRunner {
     public static ObjectNode printCurrentPage(final CommandInput commandInput) {
         User user = Admin.getUser(commandInput.getUsername());
 
+        if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
+            return ((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
+        }
+
         String currentPage = ((NormalUser)user).printCurrentPage();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -643,6 +647,32 @@ public final class CommandRunner {
         return objectNode;
     }
 
+    /**
+     * Adds new Artist merch
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public static ObjectNode addMerch(final CommandInput commandInput) {
+        User user = Admin.getUser(commandInput.getUsername());
 
+        String message;
+
+        if (user == null) {
+            message = "The username " + commandInput.getUsername() + " doesn't exist.";
+        } else if (!user.getType().equals(Enums.UserType.ARTIST)){
+            message = commandInput.getUsername() + " is not an artist.";
+        } else {
+            message = ((Artist)user).addMerch(commandInput);
+        }
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
+
+        return objectNode;
+    }
 
 }

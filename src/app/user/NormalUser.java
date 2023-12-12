@@ -6,6 +6,7 @@ import app.audio.Collections.PlaylistOutput;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
+import app.page.ArtistPage;
 import app.page.Page;
 import app.player.Player;
 import app.player.PlayerStats;
@@ -87,11 +88,16 @@ public class NormalUser extends User {
 
         lastSearched = true;
         ArrayList<String> results = new ArrayList<>();
-        List<LibraryEntry> libraryEntries = searchBar.search(filters, type);
+        ArrayList<String> libraryEntries = searchBar.search(filters, type);
 
-        for (LibraryEntry libraryEntry : libraryEntries) {
-            results.add(libraryEntry.getName());
+//        if (searchBar.getLastSearchType().equals("song")
+//        || searchBar.getLastSearchType().equals("podcast")
+//        || searchBar.getLastSearchType().equals("playlist")
+//        || searchBar.getLastSearchType().equals("album")) {
+        for (String libraryEntry : libraryEntries) {
+            results.add(libraryEntry);
         }
+//        }
         return results;
     }
 
@@ -108,13 +114,25 @@ public class NormalUser extends User {
 
         lastSearched = false;
 
-        LibraryEntry selected = searchBar.select(itemNumber);
+        String selected = searchBar.select(itemNumber);
 
         if (selected == null) {
             return "The selected ID is too high.";
         }
 
-        return "Successfully selected %s.".formatted(selected.getName());
+        if (searchBar.getLastSearchType().equals("artist")) {
+            this.currentPageType = Enums.PageType.ARTIST_PAGE;
+            currentPage = Artist.getArtistPage(selected);
+            return "Successfully selected %s's page.".formatted(selected);
+        }
+
+        if (searchBar.getLastSearchType().equals("host")) {
+            this.currentPageType = Enums.PageType.HOST_PAGE;
+            currentPage = Host.getHostPage(selected);
+            return "Successfully selected %s's page.".formatted(selected);
+        }
+
+        return "Successfully selected %s.".formatted(selected);
     }
 
     /**
@@ -123,16 +141,16 @@ public class NormalUser extends User {
      * @return the string
      */
     public String load() {
-        if (searchBar.getLastSelected() == null) {
+        if (searchBar.getLastSelectedAudio() == null) {
             return "Please select a source before attempting to load.";
         }
 
         if (!searchBar.getLastSearchType().equals("song")
-            && ((AudioCollection) searchBar.getLastSelected()).getNumberOfTracks() == 0) {
+            && ((AudioCollection) searchBar.getLastSelectedAudio()).getNumberOfTracks() == 0) {
             return "You can't load an empty audio collection!";
         }
 
-        player.setSource(searchBar.getLastSelected(), searchBar.getLastSearchType());
+        player.setSource(searchBar.getLastSelectedAudio(), searchBar.getLastSearchType());
         searchBar.clearSelection();
 
         player.pause();
@@ -410,7 +428,7 @@ public class NormalUser extends User {
      * @return the string
      */
     public String follow() {
-        LibraryEntry selection = searchBar.getLastSelected();
+        LibraryEntry selection = searchBar.getLastSelectedAudio();
         String type = searchBar.getLastSearchType();
 
         if (selection == null) {
@@ -509,8 +527,14 @@ public class NormalUser extends User {
 
     public ObjectNode offlineStatusOutput(ObjectMapper objectMapper, CommandInput commandInput, User user) {
         ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.put("command", commandInput.getCommand());
-        objectNode.put("user", commandInput.getUsername());
+
+        if (commandInput.getCommand().equals("printCurrentPage")) {
+            objectNode.put("user", commandInput.getUsername());
+            objectNode.put("command", commandInput.getCommand());
+        } else {
+            objectNode.put("command", commandInput.getCommand());
+            objectNode.put("user", commandInput.getUsername());
+        }
         objectNode.put("timestamp", commandInput.getTimestamp());
         objectNode.put("message", user.getUsername() + " is offline.");
 

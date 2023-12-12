@@ -1,5 +1,6 @@
 package app.user;
 
+import app.Admin;
 import app.audio.Collections.*;
 import app.page.HostPage;
 import app.page.Page;
@@ -9,7 +10,8 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
+
+import static app.utils.Factories.PageFactory.createPage;
 
 public class Host extends User {
     @Getter
@@ -31,6 +33,16 @@ public class Host extends User {
         podcasts = new ArrayList<>();
         announcements = new ArrayList<>();
         pages = new EnumMap<>(Enums.PageType.class);
-        pages.put(Enums.PageType.HOST_PAGE, new HostPage());
+        pages.put(Enums.PageType.HOST_PAGE,
+                createPage(Enums.PageType.HOST_PAGE, this));
+    }
+
+    public static Page getHostPage(String username) {
+        for (User user : Admin.getUsers()) {
+            if(user.getUsername().equals(username)) {
+                return ((Host)user).getPages().get(Enums.PageType.HOST_PAGE);
+            }
+        }
+        return null;
     }
 }

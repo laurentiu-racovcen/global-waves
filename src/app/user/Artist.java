@@ -13,6 +13,8 @@ import lombok.Getter;
 
 import java.util.*;
 
+import static app.utils.Factories.PageFactory.createPage;
+
 public class Artist extends User {
     @Getter
     private ArrayList<Album> albums;
@@ -36,7 +38,8 @@ public class Artist extends User {
         merches = new ArrayList<>();
         events = new ArrayList<>();
         pages = new EnumMap<>(Enums.PageType.class);
-        pages.put(Enums.PageType.ARTIST_PAGE, new ArtistPage());
+        pages.put(Enums.PageType.ARTIST_PAGE,
+                createPage(Enums.PageType.ARTIST_PAGE, this));
     }
     /**
      * Add album.
@@ -123,9 +126,8 @@ public class Artist extends User {
      * @return the array list
      */
     public String addEvent(final CommandInput commandInput) {
-        String message;
         if(!isDateValid(commandInput.getDate())) {
-            message = "Event for " + commandInput.getUsername() + " does not have a valid date.";
+            return "Event for " + commandInput.getUsername() + " does not have a valid date.";
         }
 
         if (events.stream().anyMatch(event -> event.getName().equals(commandInput.getName()))) {
@@ -138,6 +140,38 @@ public class Artist extends User {
         /* in events se adauga evenimentul dat */
         events.add(event);
         return commandInput.getUsername() + " has added new event successfully.";
+    }
+
+    /**
+     * Show albums array list.
+     *
+     * @return the array list
+     */
+    public String addMerch(final CommandInput commandInput) {
+        if(commandInput.getPrice() < 0) {
+            return "Price for merchandise can not be negative.";
+        }
+
+        if (merches.stream().anyMatch(merch -> merch.getName().equals(commandInput.getName()))) {
+            return commandInput.getUsername() + " has merchandise with the same name.";
+        }
+
+        Merch merch = new Merch(commandInput.getName(),
+                commandInput.getDescription(), commandInput.getPrice());
+
+        /* in events se adauga evenimentul dat */
+        merches.add(merch);
+        return commandInput.getUsername() + " has added new merchandise successfully.";
+    }
+
+    // TODO: ADD JAVADOC
+    public static Page getArtistPage(String username) {
+        for (User user : Admin.getUsers()) {
+            if(user.getUsername().equals(username)) {
+                return ((Artist)user).getPages().get(Enums.PageType.ARTIST_PAGE);
+            }
+        }
+        return null;
     }
 
 
