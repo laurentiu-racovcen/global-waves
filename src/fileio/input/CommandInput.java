@@ -21,6 +21,8 @@ public final class CommandInput {
     private int releaseYear;
     private String description;
     private ArrayList<Song> songs;
+    private String date;
+    private int price;
 
     public CommandInput() {
     }
@@ -151,6 +153,22 @@ public final class CommandInput {
 
     public void setSongs(ArrayList<Song> songs) {
         this.songs = songs;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 
     @Override

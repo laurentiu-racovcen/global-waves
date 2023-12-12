@@ -2,27 +2,29 @@ package app.user;
 
 import app.Admin;
 import app.audio.Collections.*;
-import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
-import app.audio.LibraryEntry;
-import app.player.Player;
-import app.player.PlayerStats;
-import app.searchBar.Filters;
-import app.searchBar.SearchBar;
+import app.page.ArtistPage;
+import app.page.Page;
+import app.user.ArtistFeatures.Event;
+import app.user.ArtistFeatures.Merch;
 import app.utils.Enums;
 import fileio.input.CommandInput;
 import lombok.Getter;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.*;
 
 public class Artist extends User {
-
     @Getter
     private ArrayList<Album> albums;
+    @Getter
+    ArrayList<Merch> merches;
+    @Getter
+    ArrayList<Event> events;
+    @Getter
+    private EnumMap<Enums.PageType,Page> pages;
 
     /**
-     * Instantiates a new User.
+     * Instantiates a new Artist User.
      *
      * @param username the username
      * @param age      the age
@@ -31,6 +33,10 @@ public class Artist extends User {
     public Artist(final String username, final int age, final String city) {
         super(username, age, city, Enums.UserType.ARTIST);
         albums = new ArrayList<>();
+        merches = new ArrayList<>();
+        events = new ArrayList<>();
+        pages = new EnumMap<>(Enums.PageType.class);
+        pages.put(Enums.PageType.ARTIST_PAGE, new ArtistPage());
     }
     /**
      * Add album.
@@ -81,4 +87,58 @@ public class Artist extends User {
         }
         return albumOutputs;
     }
+
+    /**
+     * Checks if date is valid.
+     *
+     * @return the result
+     */
+    private boolean isDateValid(String date) {
+        String [] formattedDate = date.split("-");
+        System.out.println(formattedDate[0]);
+
+        if (Integer.parseInt(formattedDate[0]) > 28) {
+            if (Integer.parseInt(formattedDate[0]) > 31) {
+                return false;
+            }
+            if (Integer.parseInt(formattedDate[1]) == 2) {
+                return false;
+            }
+        }
+
+        if (Integer.parseInt(formattedDate[1]) > 12) {
+            return false;
+        }
+
+        if (Integer.parseInt(formattedDate[2]) < 1900 || Integer.parseInt(formattedDate[2]) > 2023) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Show albums array list.
+     *
+     * @return the array list
+     */
+    public String addEvent(final CommandInput commandInput) {
+        String message;
+        if(!isDateValid(commandInput.getDate())) {
+            message = "Event for " + commandInput.getUsername() + " does not have a valid date.";
+        }
+
+        if (events.stream().anyMatch(event -> event.getName().equals(commandInput.getName()))) {
+            return commandInput.getUsername() + " has another event with the same name.";
+        }
+
+        Event event = new Event(commandInput.getName(),
+                commandInput.getDescription(), commandInput.getDate());
+
+        /* in events se adauga evenimentul dat */
+        events.add(event);
+        return commandInput.getUsername() + " has added new event successfully.";
+    }
+
+
 }

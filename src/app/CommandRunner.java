@@ -1,6 +1,5 @@
 package app;
 
-import app.audio.Collections.Album;
 import app.audio.Collections.AlbumOutput;
 import app.audio.Collections.PlaylistOutput;
 import app.player.PlayerStats;
@@ -595,5 +594,55 @@ public final class CommandRunner {
 
         return objectNode;
     }
+
+    /**
+     * Prints current page contents.
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public static ObjectNode printCurrentPage(final CommandInput commandInput) {
+        User user = Admin.getUser(commandInput.getUsername());
+
+        String currentPage = ((NormalUser)user).printCurrentPage();
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", objectMapper.valueToTree(currentPage));
+
+        return objectNode;
+    }
+
+    /**
+     * Adds new Artist event
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public static ObjectNode addEvent(final CommandInput commandInput) {
+        User user = Admin.getUser(commandInput.getUsername());
+
+        String message;
+
+        if (user == null) {
+            message = "The username " + commandInput.getUsername() + " doesn't exist.";
+        } else if (!user.getType().equals(Enums.UserType.ARTIST)){
+            message = commandInput.getUsername() + " is not an artist.";
+        } else {
+            message = ((Artist)user).addEvent(commandInput);
+        }
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
+
+        return objectNode;
+    }
+
+
 
 }

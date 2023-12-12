@@ -6,6 +6,7 @@ import app.audio.Collections.PlaylistOutput;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
+import app.page.Page;
 import app.player.Player;
 import app.player.PlayerStats;
 import app.searchBar.Filters;
@@ -16,8 +17,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.input.CommandInput;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static app.utils.Factories.PageFactory.createPage;
 
 /**
  * The type NormalUser.
@@ -29,14 +31,25 @@ public class NormalUser extends User {
     private ArrayList<Song> likedSongs;
     @Getter
     private ArrayList<Playlist> followedPlaylists;
-    @Getter
-    private Enums.ConnectionStatus connectionStatus;
     private final Player player;
     private final SearchBar searchBar;
     private boolean lastSearched;
+    @Getter
+    private Enums.ConnectionStatus connectionStatus;
+    @Getter
+    private EnumMap<Enums.PageType,Page> pages;
+    @Getter
+    private Page currentPage;
+    @Getter
+    private Enums.PageType currentPageType;
+    @Getter
+    ArrayList<Song> top5LikedSongs;
+    @Getter
+    ArrayList<Playlist> top5FollowedPlaylists;
+    private static final Integer MAX_RESULTS = 5;
 
     /**
-     * Instantiates a new User.
+     * Instantiates a new Normal User.
      *
      * @param username the username
      * @param age      the age
@@ -51,6 +64,14 @@ public class NormalUser extends User {
         searchBar = new SearchBar(username);
         lastSearched = false;
         connectionStatus = Enums.ConnectionStatus.ONLINE;
+        top5LikedSongs = new ArrayList<>();
+        top5FollowedPlaylists = new ArrayList<>();
+        pages = new EnumMap<>(Enums.PageType.class);
+        pages.put(Enums.PageType.HOMEPAGE,
+                createPage(Enums.PageType.HOMEPAGE, this));
+        pages.put(Enums.PageType.LIKED_CONTENT_PAGE,
+                createPage(Enums.PageType.LIKED_CONTENT_PAGE, this));
+        currentPage = pages.get(Enums.PageType.HOMEPAGE);
     }
 
     /**
@@ -261,6 +282,7 @@ public class NormalUser extends User {
 
         likedSongs.add(song);
         song.like();
+        updateTop5LikedSongs();
         return "Like registered successfully.";
     }
 
@@ -414,7 +436,7 @@ public class NormalUser extends User {
 
         followedPlaylists.add(playlist);
         playlist.increaseFollowers();
-
+        updateTop5FollowedPlaylists();
 
         return "Playlist followed successfully.";
     }
@@ -481,6 +503,7 @@ public class NormalUser extends User {
         } else {
             connectionStatus = Enums.ConnectionStatus.OFFLINE;
         }
+
         return super.getUsername() + " has changed status successfully.";
     }
 
@@ -490,8 +513,9 @@ public class NormalUser extends User {
         objectNode.put("user", commandInput.getUsername());
         objectNode.put("timestamp", commandInput.getTimestamp());
         objectNode.put("message", user.getUsername() + " is offline.");
-        if (commandInput.getCommand().equals("search")
 
+        // TODO: CHANGE CASES TO A SIMPLE FORM BASED ON ENUM WITH COMMANDS
+        if (commandInput.getCommand().equals("search")
         ) {
             objectNode.put("results", objectMapper.valueToTree(new ArrayList<String>()));
         } else if (commandInput.getCommand().equals("showPlaylists")
@@ -503,7 +527,60 @@ public class NormalUser extends User {
         ) {
             objectNode.put("result", objectMapper.valueToTree(new ArrayList<String>()));
         }
+
         return objectNode;
+    }
+
+    public String printCurrentPage() {
+//        switch (currentPageType) {
+//            case HOMEPAGE: return (currentPage).getPageContents();
+//        }
+        return currentPage.getPageContents();
+    }
+
+    private void updateTop5LikedSongs() {
+        List<Song> songs = this.likedSongs;
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+
+                return o1.getLikes() - o2.getLikes();
+            }
+        });
+
+        this.top5LikedSongs.clear();
+
+        while (this.top5LikedSongs.size() < MAX_RESULTS && this.top5LikedSongs.size() < songs.size()) {
+            this.top5LikedSongs.add(songs.get(top5LikedSongs.size()));
+        }
+    }
+
+    private void updateTop5FollowedPlaylists() {
+        List<Playlist> playlists = this.playlists;
+        Collections.sort(playlists, new Comparator<Playlist>() {
+            @Override
+            public int compare(Playlist o1, Playlist o2) {
+                 // se parcurg ambele playlist-uri curente
+                 // si se aduna like-urile acestora
+                int likesCount1 = 0;
+                int likesCount2 = 0;
+                for (Song iterSong : o1.getSongs()) {
+                    likesCount1 += iterSong.getLikes();
+                }
+                for (Song iterSong : o2.getSongs()) {
+                    likesCount2 += iterSong.getLikes();
+                }
+
+                return likesCount1 - likesCount2;
+            }
+        });
+
+        this.top5FollowedPlaylists.clear();
+
+        while (this.top5FollowedPlaylists.size() < MAX_RESULTS &&
+                this.top5FollowedPlaylists.size() < playlists.size()) {
+            this.top5FollowedPlaylists.add(playlists.get(top5FollowedPlaylists.size()));
+        }
     }
 
     /**
