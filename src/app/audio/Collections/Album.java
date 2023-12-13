@@ -1,12 +1,19 @@
 package app.audio.Collections;
 
+import app.Admin;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Episode;
 import app.audio.Files.Song;
+import app.user.Artist;
+import app.user.NormalUser;
+import app.user.User;
 import app.utils.Enums;
 import lombok.Getter;
 
 import java.util.*;
+
+import static app.Admin.getUser;
+import static app.user.User.NormalUserInteractsWithAlbum;
 
 /**
  * The type Album.
@@ -77,6 +84,19 @@ public final class Album extends AudioCollection {
     @Override
     public AudioFile getTrackByIndex(final int index) {
         return songs.get(index);
+    }
+
+    public boolean IsAlbumInteracted() {
+        for (User user : Admin.getUsers()) {
+            if (user.getType().equals(Enums.UserType.NORMAL)) {
+                if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
+                    if (NormalUserInteractsWithAlbum((NormalUser) user, this) == true) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

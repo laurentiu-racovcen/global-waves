@@ -2,6 +2,8 @@ package app.audio.Collections;
 
 import app.audio.Files.AudioFile;
 import app.audio.Files.Episode;
+import app.audio.Files.Song;
+
 import java.util.List;
 
 public final class Podcast extends AudioCollection {
@@ -24,5 +26,14 @@ public final class Podcast extends AudioCollection {
     @Override
     public AudioFile getTrackByIndex(final int index) {
         return episodes.get(index);
+    }
+
+    /**
+     * Add episode.
+     *
+     * @param episode the episode
+     */
+    public void addEpisode(final Episode episode) {
+        episodes.add(episode);
     }
 }

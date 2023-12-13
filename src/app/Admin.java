@@ -240,7 +240,7 @@ public final class Admin {
     }
 
     /**
-     * Adds new user
+     * Removes a user from database
      * @param commandInput
      * @return message
      */
@@ -274,12 +274,21 @@ public final class Admin {
     }
 
     /**
-     * Adds new song
+     * Adds new song in library
      * @param song
      * @return message
      */
     public static void addSong(final Song song) {
         songs.add(song);
+    }
+
+    /**
+     * Adds new podcast in library
+     * @param podcast
+     * @return message
+     */
+    public static void addPodcast(final Podcast podcast) {
+        podcasts.add(podcast);
     }
 
     /**

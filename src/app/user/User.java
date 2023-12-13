@@ -2,6 +2,7 @@ package app.user;
 
 import app.Admin;
 import app.audio.Collections.Album;
+import app.audio.Collections.Playlist;
 import app.audio.Collections.Podcast;
 import app.audio.Files.Song;
 import app.utils.Enums;
@@ -106,6 +107,29 @@ public class User {
     }
 
     // TODO JAVADOC
+    public static boolean NormalUserInteractsWithAlbum(final NormalUser user, final Album album) {
+        if (user.getPlayer().getSource() != null) {
+            /* verificare in player */
+            if (user.getPlayer().getType().equals("song")) {
+                /* se verifica daca albumul dat contine vreo melodie care ruleaza */
+                if (((Song) user.getPlayer().getSource().getAudioFile()).getAlbum().equals(album.getName())) {
+                    return true;
+                }
+            } else if (user.getPlayer().getType().equals("album")) {
+                if ((user.getPlayer().getSource().getAudioCollection()).getName().equals(album.getName())) {
+                    return true;
+                }
+            } else if (user.getPlayer().getType().equals("playlist")) {
+                if (((Playlist)(user.getPlayer().getSource().getAudioCollection())).containsSongFromAlbum(album)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // TODO JAVADOC
     public static void removeArtistMatches(ArrayList<Song> likedSongs, String artist) {
         for (int i = 0; i < likedSongs.size(); i++) {
             if (likedSongs.get(i).getArtist().equals(artist)) {
@@ -118,7 +142,6 @@ public class User {
 
     // TODO JAVADOC + hide if-for-if
     public static void deleteCreatorFromLibrary(String username, Enums.UserType type) {
-
 
         if (type.equals(Enums.UserType.ARTIST)) {
             for (int i = 0; i < Admin.getAlbums().size(); i++) {
@@ -152,7 +175,6 @@ public class User {
                 Admin.getUsers().remove(i);
             }
         }
-
     }
 
 }

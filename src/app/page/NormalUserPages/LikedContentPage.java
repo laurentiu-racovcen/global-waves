@@ -30,7 +30,7 @@ public class LikedContentPage extends Page {
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
                 songsContents = songsContents + likedSongs.get(i).getName() +
-                        " - " + likedSongs.get(i).getArtist() + "]";
+                        " - " + likedSongs.get(i).getArtist();
             }
         }
         return songsContents;
@@ -44,8 +44,8 @@ public class LikedContentPage extends Page {
                         " - " + followedPlaylists.get(i).getOwner() + ", ";
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
-                podcastsContents = podcastsContents + likedSongs.get(i).getName() +
-                        " - " + followedPlaylists.get(i).getOwner() + "]";
+                podcastsContents = podcastsContents + followedPlaylists.get(i).getName() +
+                        " - " + followedPlaylists.get(i).getOwner();
             }
         }
         return podcastsContents;
@@ -54,8 +54,8 @@ public class LikedContentPage extends Page {
     @Override
     public String getPageContents() {
         String contents;
-        contents = "Liked Songs:\n\t[" + getLikedSongsString() +
-                "\n\nFollowed Playlists:\n\t[" + getFollowedPlaylistsString();
+        contents = "Liked songs:\n\t[" + getLikedSongsString() + "]" +
+                "\n\nFollowed playlists:\n\t[" + getFollowedPlaylistsString() + "]";
         return contents;
     }
 }

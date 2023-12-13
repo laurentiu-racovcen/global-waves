@@ -1,5 +1,6 @@
 package app.audio.Collections;
 
+import app.Admin;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.utils.Enums;
@@ -134,5 +135,14 @@ public final class Playlist extends AudioCollection {
         } else {
             return count == Integer.parseInt(query);
         }
+    }
+
+    public boolean containsSongFromAlbum(Album album) {
+        for (Song song : album.getSongs()) {
+            if (songs.stream().anyMatch(iterPlaylistSong -> iterPlaylistSong.getName().equals(song.getName()))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

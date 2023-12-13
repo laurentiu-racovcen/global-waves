@@ -73,8 +73,12 @@ public class Artist extends User {
                 }
             }
 
+            /* daca albumul dat NU exista in library, acesta se adauga */
+            if (!Admin.getAlbums().stream().anyMatch(iterAlbum -> iterAlbum.getName().equals(album.getName()))) {
+                Admin.addAlbum(album);
+            }
             albums.add(album);
-            Admin.addAlbum(album);
+
             return commandInput.getUsername() + " has added new album successfully.";
         }
     }
@@ -188,6 +192,35 @@ public class Artist extends User {
             }
         }
         return false;
+    }
+
+    /**
+     * Removes artist album
+     * @param commandInput
+     * @return message
+     */
+    public String removeAlbum(final CommandInput commandInput) {
+
+        Artist artist = (Artist)getUser(commandInput.getUsername());
+        Album album = null;
+
+        for (Album albumIter : artist.getAlbums()) {
+            if (albumIter.getName().equals(commandInput.getName())) {
+                album = albumIter;
+            }
+        }
+
+        if (album == null) {
+            return commandInput.getUsername() + " doesn't have an album with the given name.";
+        }
+
+        if (album.IsAlbumInteracted()){
+            return commandInput.getUsername() + " can't delete this album.";
+        }
+
+        deleteCreatorFromLibrary(commandInput.getUsername(), Enums.UserType.ARTIST);
+
+        return commandInput.getUsername() + " deleted the album successfully.";
     }
 
 }

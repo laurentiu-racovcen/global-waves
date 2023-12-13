@@ -32,7 +32,7 @@ public class HostPage extends Page {
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
                 episodesContents = episodesContents + episodes.get(i).getName() +
-                        " - " + episodes.get(i).getDescription() + "]";
+                        " - " + episodes.get(i).getDescription() + "]\n";
             }
         }
         return episodesContents;
@@ -55,14 +55,14 @@ public class HostPage extends Page {
 
     private String getAnnouncementsString () {
         String announcementsContents = "";
-        for (int i = 0; i < podcasts.size(); i++) {
-            if (i != podcasts.size()-1) {
+        for (int i = 0; i < announcements.size(); i++) {
+            if (i != announcements.size()-1) {
                 announcementsContents = announcementsContents + announcements.get(i).getName() + "\n\t" +
                         announcements.get(i).getDescription() + "\n";
             } else {
                 /* daca este ultimul element din array, nu se pune virgula */
-                announcementsContents = announcementsContents + announcements.get(i).getName() + ":\n\t[" +
-                        announcements.get(i).getDescription();
+                announcementsContents = announcementsContents + announcements.get(i).getName() + ":\n\t" +
+                        announcements.get(i).getDescription() + "\n";
             }
         }
         return announcementsContents;

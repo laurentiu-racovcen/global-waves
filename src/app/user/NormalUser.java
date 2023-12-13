@@ -7,6 +7,7 @@ import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
 import app.page.ArtistPage;
+import app.page.NormalUserPages.HomePage;
 import app.page.Page;
 import app.player.Player;
 import app.player.PlayerStats;
@@ -564,6 +565,18 @@ public class NormalUser extends User {
         return currentPage.getPageContents();
     }
 
+    public String changePage(String nextPage) {
+        if (nextPage.equals("Home")) {
+            currentPage = pages.get(Enums.PageType.HOMEPAGE);
+            return getUsername() + " accessed Home successfully.";
+        } else if (nextPage.equals("LikedContent")) {
+            currentPage = pages.get(Enums.PageType.LIKED_CONTENT_PAGE);
+            return getUsername() + " accessed LikedContent successfully.";
+        } else {
+            return getUsername() + " is trying to access a non-existent page.";
+        }
+    }
+
     private void updateTop5LikedSongs() {
         List<Song> songs = this.likedSongs;
         Collections.sort(songs, new Comparator<Song>() {
@@ -582,7 +595,7 @@ public class NormalUser extends User {
     }
 
     private void updateTop5FollowedPlaylists() {
-        List<Playlist> playlists = this.playlists;
+        List<Playlist> playlists = this.followedPlaylists;
         Collections.sort(playlists, new Comparator<Playlist>() {
             @Override
             public int compare(Playlist o1, Playlist o2) {
