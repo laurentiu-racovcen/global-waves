@@ -16,6 +16,7 @@ public final class Player {
     private Enums.RepeatMode repeatMode;
     private boolean shuffle;
     private boolean paused;
+    @Getter
     private PlayerSource source;
     @Getter
     private String type;

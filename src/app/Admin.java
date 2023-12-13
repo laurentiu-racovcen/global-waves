@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static app.user.Artist.IsArtistInteracted;
+import static app.user.Host.IsHostInteracted;
+import static app.user.User.deleteCreatorFromLibrary;
+
 /**
  * The type Admin.
  */
@@ -24,6 +28,7 @@ public final class Admin {
     private static Admin adminInstance = null;
     @Getter
     private static List<User> users = new ArrayList<>();
+    @Getter
     private static List<Song> songs = new ArrayList<>();
     private static List<Podcast> podcasts = new ArrayList<>();
     private static List<Album> albums = new ArrayList<>();
@@ -90,10 +95,6 @@ public final class Admin {
      *
      * @return the songs
      */
-    public static List<Song> getSongs() {
-        return new ArrayList<>(songs);
-    }
-
     /**
      * Gets podcasts.
      *
@@ -236,6 +237,40 @@ public final class Admin {
         }
 
         return "The username " + commandInput.getUsername() + " has been added successfully.";
+    }
+
+    /**
+     * Adds new user
+     * @param commandInput
+     * @return message
+     */
+    public static String deleteUser(final CommandInput commandInput) {
+
+        boolean existsUser = false;
+
+        for (User user : users) {
+            if (user.getUsername().equals(commandInput.getUsername())) {
+                existsUser = true;
+            }
+        }
+
+        if (existsUser == false) {
+            return "The username " + commandInput.getUsername() + " doesn't exist.";
+        }
+
+        if (getUser(commandInput.getUsername()).getType().equals(Enums.UserType.ARTIST)) {
+            if (IsArtistInteracted(commandInput.getUsername())) {
+                return commandInput.getUsername() + " can't be deleted.";
+            }
+            deleteCreatorFromLibrary(commandInput.getUsername(), Enums.UserType.ARTIST);
+        } else if (getUser(commandInput.getUsername()).getType().equals(Enums.UserType.HOST)) {
+            if (IsHostInteracted(commandInput.getUsername())) {
+                return commandInput.getUsername() + " can't be deleted.";
+            }
+            deleteCreatorFromLibrary(commandInput.getUsername(), Enums.UserType.HOST);
+        }
+
+        return commandInput.getUsername() + " was successfully deleted.";
     }
 
     /**

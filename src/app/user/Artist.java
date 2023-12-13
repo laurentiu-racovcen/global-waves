@@ -13,6 +13,7 @@ import lombok.Getter;
 
 import java.util.*;
 
+import static app.Admin.getUser;
 import static app.utils.Factories.PageFactory.createPage;
 
 public class Artist extends User {
@@ -174,5 +175,19 @@ public class Artist extends User {
         return null;
     }
 
+    // TODO JAVADOC
+    public static boolean IsArtistInteracted(final String username) {
+        Artist artist = (Artist) getUser(username);
+        for (User user : Admin.getUsers()) {
+            if (user.getType().equals(Enums.UserType.NORMAL)) {
+                if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
+                    if (NormalUserInteractsWithArtist((NormalUser) user, artist) == true) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
 }

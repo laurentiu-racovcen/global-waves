@@ -540,6 +540,61 @@ public final class CommandRunner {
 
         return objectNode;
     }
+
+    // TODO ADD JAVADOC
+    public static List<String> getAllNormalUsers() {
+        List<String> result = new ArrayList<>();
+
+        for (User user : Admin.getUsers()) {
+            if (user.getType().equals(Enums.UserType.NORMAL)) {
+                result.add(user.getUsername());
+            }
+        }
+
+        return result;
+    }
+
+    // TODO ADD JAVADOC
+    public static List<String> getAllArtists() {
+        List<String> result = new ArrayList<>();
+
+        for (User user : Admin.getUsers()) {
+            if (user.getType().equals(Enums.UserType.ARTIST)) {
+                result.add(user.getUsername());
+            }
+        }
+
+        return result;
+    }
+
+    // TODO ADD JAVADOC
+    public static List<String> getAllHosts() {
+        List<String> result = new ArrayList<>();
+
+        for (User user : Admin.getUsers()) {
+            if (user.getType().equals(Enums.UserType.HOST)) {
+                result.add(user.getUsername());
+            }
+        }
+
+        return result;
+    }
+
+    // TODO ADD JAVADOC
+    public static ObjectNode getAllUsers(final CommandInput commandInput) {
+        List<String> result = new ArrayList<>();
+        result.addAll(getAllNormalUsers());
+        result.addAll(getAllArtists());
+        result.addAll(getAllHosts());
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("result", objectMapper.valueToTree(result));
+
+        return objectNode;
+    }
+
     // TODO ADD JAVADOC
     public static ObjectNode addUser(final CommandInput commandInput) {
         String message = Admin.addUser(commandInput);
@@ -552,6 +607,20 @@ public final class CommandRunner {
 
         return objectNode;
     }
+
+    // TODO ADD JAVADOC
+    public static ObjectNode deleteUser(final CommandInput commandInput) {
+        String message = Admin.deleteUser(commandInput);
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
+
+        return objectNode;
+    }
+
     // TODO ADD JAVADOC
     public static ObjectNode addAlbum(final CommandInput commandInput) {
         User user = Admin.getUser(commandInput.getUsername());

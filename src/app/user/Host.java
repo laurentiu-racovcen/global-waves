@@ -11,6 +11,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
+import static app.Admin.getUser;
 import static app.utils.Factories.PageFactory.createPage;
 
 public class Host extends User {
@@ -37,6 +38,7 @@ public class Host extends User {
                 createPage(Enums.PageType.HOST_PAGE, this));
     }
 
+    // JAVADOC
     public static Page getHostPage(String username) {
         for (User user : Admin.getUsers()) {
             if(user.getUsername().equals(username)) {
@@ -44,5 +46,20 @@ public class Host extends User {
             }
         }
         return null;
+    }
+
+    // TODO JAVADOC
+    public static boolean IsHostInteracted(final String username) {
+        Host host = (Host) getUser(username);
+        for (User user : Admin.getUsers()) {
+            if (user.getType().equals(Enums.UserType.NORMAL)) {
+                if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
+                    if (NormalUserInteractsWithHost((NormalUser) user, host) == true) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

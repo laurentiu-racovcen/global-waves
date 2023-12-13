@@ -32,7 +32,9 @@ public class NormalUser extends User {
     private ArrayList<Song> likedSongs;
     @Getter
     private ArrayList<Playlist> followedPlaylists;
+    @Getter
     private final Player player;
+    @Getter
     private final SearchBar searchBar;
     private boolean lastSearched;
     @Getter
