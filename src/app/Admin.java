@@ -19,7 +19,8 @@ import java.util.List;
 
 import static app.user.Artist.IsArtistInteracted;
 import static app.user.Host.IsHostInteracted;
-import static app.user.User.deleteCreatorFromLibrary;
+import static app.user.NormalUser.*;
+import static app.user.User.*;
 
 /**
  * The type Admin.
@@ -239,6 +240,40 @@ public final class Admin {
         return "The username " + commandInput.getUsername() + " has been added successfully.";
     }
 
+    // TODO JAVADOC + hide if-for-if
+    public static void deleteUserPlaylists(User user, Playlist playlistIter) {
+
+        if (user.getType().equals(Enums.UserType.NORMAL)) {
+
+            /* se verifica daca user are vreun playlist cu numele lui PlaylistIter */
+
+            for (Playlist playlist : ((NormalUser) user).getFollowedPlaylists()) {
+                if (playlist.getName().equals(playlistIter.getName())) {
+                    removeFollowedPlaylist(playlistIter.getName(), ((NormalUser) user));
+                    break;
+                }
+            }
+
+//            if (((NormalUser) user).getPlaylists().stream().anyMatch(playlist -> playlist.getName().equals(playlistIter.getName()))) {
+//                removePlaylist(playlistIter.getName(), ((NormalUser) user));
+//            }
+        }
+
+    }
+
+    // TODO JAVADOC + hide if-for-if
+    public static void deleteUserPlaylistsFromDatabase(NormalUser user) {
+
+        for (Playlist playlistIter : user.getPlaylists()) { // TODO: ADD: ONLY IF PLAYLIST IS PUBLIC, pt a nu face iteratii degeaba
+            for (int i = 0; i < Admin.getUsers().size(); i++) {
+                if (Admin.getUsers().get(i) != user) {
+                    deleteUserPlaylists(Admin.getUsers().get(i), playlistIter);
+                }
+            }
+        }
+
+    }
+
     /**
      * Removes a user from database
      * @param commandInput
@@ -268,6 +303,12 @@ public final class Admin {
                 return commandInput.getUsername() + " can't be deleted.";
             }
             deleteCreatorFromLibrary(commandInput.getUsername(), Enums.UserType.HOST);
+        } else if (getUser(commandInput.getUsername()).getType().equals(Enums.UserType.NORMAL)) {
+            if (((NormalUser)getUser(commandInput.getUsername())).IsNormalUserInteractedBy(commandInput.getUsername())) {
+                return commandInput.getUsername() + " can't be deleted.";
+            }
+            deleteUserPlaylistsFromDatabase(((NormalUser)getUser(commandInput.getUsername())));
+            deleteUserFromDatabase(commandInput.getUsername());
         }
 
         return commandInput.getUsername() + " was successfully deleted.";

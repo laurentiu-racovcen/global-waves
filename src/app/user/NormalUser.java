@@ -1,5 +1,6 @@
 package app.user;
 
+import app.Admin;
 import app.audio.Collections.AudioCollection;
 import app.audio.Collections.Playlist;
 import app.audio.Collections.PlaylistOutput;
@@ -21,6 +22,7 @@ import lombok.Getter;
 
 import java.util.*;
 
+import static app.Admin.getUser;
 import static app.utils.Factories.PageFactory.createPage;
 
 /**
@@ -620,6 +622,59 @@ public class NormalUser extends User {
                 this.top5FollowedPlaylists.size() < playlists.size()) {
             this.top5FollowedPlaylists.add(playlists.get(top5FollowedPlaylists.size()));
         }
+    }
+
+    // TODO JAVADOC
+    public boolean InteractsWithNormalUser(final NormalUser interactedUser) {
+        /* verificare in player */
+        if (this.getPlayer().getSource() != null) {
+            if (this.getPlayer().getSource().getType().equals(Enums.PlayerSourceType.PLAYLIST)) {
+                if ((this.getPlayer().getSource().getAudioCollection()).getOwner().equals(interactedUser.getUsername())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // TODO JAVADOC, aici se verifica daca un user este interactionat de alt user dat prin parametru
+    public boolean IsNormalUserInteractedBy(final String username) {
+        NormalUser normalUser = (NormalUser) getUser(username);
+        for (User iterUser : Admin.getUsers()) {
+            if (iterUser.getType().equals(Enums.UserType.NORMAL)) {
+                if (((NormalUser)iterUser).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
+                    if (((NormalUser)iterUser).InteractsWithNormalUser(normalUser)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // TODO JAVADOC + hide if-for-if
+    public static void removeFollowedPlaylist(String playlistName, NormalUser user) {
+
+        for (int i = 0; i < user.getFollowedPlaylists().size(); i++) {
+            if (user.getFollowedPlaylists().get(i).getName().equals(playlistName)) {
+                user.getFollowedPlaylists().remove(i);
+                user.updateTop5FollowedPlaylists();
+                break;
+            }
+        }
+
+    }
+
+    // TODO JAVADOC
+    public static void deleteUserFromDatabase(String username) {
+        for (int i = 0; i < Admin.getUsers().size(); i++) {
+            if (Admin.getUsers().get(i).getUsername().equals(username)) {
+                Admin.getUsers().remove(i);
+                break;
+            }
+        }
+
     }
 
     /**

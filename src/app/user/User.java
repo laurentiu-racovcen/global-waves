@@ -67,8 +67,10 @@ public class User {
             }
 
             if (checkedUser.getSearchBar().getLastSearchType().equals("artist")) {
-                if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedArtist.getUsername())) {
-                    return true;
+                if ((checkedUser.getSearchBar().getLastSelectedCreator() != null)) {
+                    if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedArtist.getUsername())) {
+                        return true;
+                    }
                 }
             }
         }
@@ -79,9 +81,11 @@ public class User {
     // TODO JAVADOC
     public static boolean NormalUserInteractsWithHost(final NormalUser checkedUser, final Host searchedHost) {
         /* verificare in player */
-        if (checkedUser.getPlayer().getSource().getType().equals("podcast")) {
-            if ((checkedUser.getPlayer().getSource().getAudioCollection()).getOwner().equals(searchedHost.getUsername())) {
-                return true;
+        if (checkedUser.getPlayer().getSource() != null) {
+            if (checkedUser.getPlayer().getSource().getType().equals("podcast")) {
+                if ((checkedUser.getPlayer().getSource().getAudioCollection()).getOwner().equals(searchedHost.getUsername())) {
+                    return true;
+                }
             }
         }
 
@@ -92,15 +96,19 @@ public class User {
 
         /* verificare in searchBar */
         // TODO: DE FACUT SUB FORMA DE SWITCH CASES!! SI LA CELE DE MAI SUS TOT DE FACUT.
-        if (checkedUser.getSearchBar().getLastSearchType().equals("podcast")) {
-            if (((Podcast)checkedUser.getSearchBar().getLastSelectedAudio()).getOwner().equals(searchedHost.getUsername()))
-                return true;
-        }
+        if (checkedUser.getSearchBar().getLastSearchType() != null) {
 
-        if (checkedUser.getSearchBar().getLastSearchType().equals("host")) {
-            if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedHost.getUsername())) {
-                return true;
+            if (checkedUser.getSearchBar().getLastSearchType().equals("podcast")) {
+                if (((Podcast) checkedUser.getSearchBar().getLastSelectedAudio()).getOwner().equals(searchedHost.getUsername()))
+                    return true;
             }
+
+            if (checkedUser.getSearchBar().getLastSearchType().equals("host")) {
+                if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedHost.getUsername())) {
+                    return true;
+                }
+            }
+
         }
 
         return false;

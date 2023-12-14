@@ -172,7 +172,7 @@ public class Artist extends User {
     // TODO: ADD JAVADOC
     public static Page getArtistPage(String username) {
         for (User user : Admin.getUsers()) {
-            if(user.getUsername().equals(username)) {
+            if (user.getUsername().equals(username) && user.getType().equals(Enums.UserType.ARTIST)) {
                 return ((Artist)user).getPages().get(Enums.PageType.ARTIST_PAGE);
             }
         }
