@@ -151,7 +151,7 @@ public final class SearchBar {
                 creatorsEntries = new ArrayList<>(Admin.getUsers());
 
                 if (filters.getName() != null) {
-                    creatorsEntries = filterCreatorsByName(creatorsEntries, filters.getName());
+                    creatorsEntries = filterCreatorsByName(creatorsEntries, filters.getName(), type);
                 }
                 this.creatorsResults = creatorsEntries;
 

@@ -7,12 +7,14 @@ import app.page.ArtistPage;
 import app.page.Page;
 import app.user.ArtistFeatures.Event;
 import app.user.ArtistFeatures.Merch;
+import app.user.HostFeatures.Announcement;
 import app.utils.Enums;
 import fileio.input.CommandInput;
 import lombok.Getter;
 
 import java.util.*;
 
+import static app.Admin.deleteCreatorFromLibrary;
 import static app.Admin.getUser;
 import static app.utils.Factories.PageFactory.createPage;
 
@@ -145,6 +147,42 @@ public class Artist extends User {
         /* in events se adauga evenimentul dat */
         events.add(event);
         return commandInput.getUsername() + " has added new event successfully.";
+    }
+
+    /**
+     * Removes an artist event
+     * @param commandInput
+     * @return message
+     */
+    public String removeEvent(final CommandInput commandInput) {
+
+        boolean existsUser = false;
+
+        for (User user : Admin.getUsers()) {
+            if (user.getUsername().equals(commandInput.getUsername())) {
+                existsUser = true;
+            }
+        }
+
+        if (existsUser == false) {
+            return "The username " + commandInput.getUsername() + " doesn't exist.";
+        }
+
+        Event foundEvent = null;
+
+        for (Event event : events) {
+            if (event.getName().equals(commandInput.getName())) {
+                foundEvent = event;
+            }
+        }
+
+        if (foundEvent == null) {
+            return commandInput.getUsername() + " has no event with the given name.";
+        }
+
+        events.remove(foundEvent);
+
+        return commandInput.getUsername() + " deleted the event successfully.";
     }
 
     /**

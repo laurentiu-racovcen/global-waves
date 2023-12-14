@@ -62,7 +62,7 @@ public class Host extends User {
         for (User user : Admin.getUsers()) {
             if (user.getType().equals(Enums.UserType.NORMAL)) {
                 if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
-                    if (NormalUserInteractsWithHost((NormalUser) user, host) == true) {
+                    if (NormalUserInteractsWithHost((NormalUser) user, host)) {
                         return true;
                     }
                 }

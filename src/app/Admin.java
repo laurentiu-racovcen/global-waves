@@ -5,6 +5,7 @@ import app.audio.Collections.Playlist;
 import app.audio.Collections.Podcast;
 import app.audio.Files.Episode;
 import app.audio.Files.Song;
+import app.page.Page;
 import app.user.Artist;
 import app.user.Host;
 import app.user.NormalUser;
@@ -13,9 +14,7 @@ import app.utils.Enums;
 import fileio.input.*;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static app.user.Artist.IsArtistInteracted;
 import static app.user.Host.IsHostInteracted;
@@ -207,12 +206,38 @@ public final class Admin {
     }
 
     /**
+     * Gets top 5 albums.
+     *
+     * @return the top 5 albums
+     */
+    public static List<String> getTop5Albums() {
+
+        /* se foloseste TreeMap, pentru ca albumele sa fie sortate
+        dupa denumirile lor direct la adaugarea in Map */
+        TreeMap<String, Integer> albumsLikes = new TreeMap<>();
+
+        for (int i=0; i < albums.size(); i++) {
+            albumsLikes.put(albums.get(i).getName(), albums.get(i).getAlbumLikes());
+        }
+
+        List<String> sortedAlbums = new ArrayList<>();
+
+        for (int i=0; i < LIMIT && i < albums.size(); i++) {
+            sortedAlbums.add(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
+            albumsLikes.remove(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
+        }
+
+        return sortedAlbums;
+    }
+
+    /**
      * Reset.
      */
     public void reset() {
         users = new ArrayList<>();
         songs = new ArrayList<>();
         podcasts = new ArrayList<>();
+        albums = new ArrayList<>();
         timestamp = 0;
     }
 
@@ -272,6 +297,50 @@ public final class Admin {
             }
         }
 
+    }
+
+    // TODO JAVADOC + hide if-for-if
+    public static void deleteCreatorFromLibrary(String username, Enums.UserType type) {
+
+        if (type.equals(Enums.UserType.ARTIST)) {
+
+            for (int i = 0; i < Admin.albums.size(); i++) {
+                if (albums.get(i).getOwner().equals(username)) {
+                    Admin.albums.remove(i);
+                    i--;
+                }
+            }
+
+            for (int i = 0; i < Admin.getSongs().size(); i++) {
+                if (Admin.getSongs().get(i).getArtist().equals(username)) {
+                    Admin.songs.remove(i);
+                    i--;
+                }
+            }
+
+            // TODO - DELETE SONGS FROM LIKED SONGS ale tuturor userilor - la artist
+            for (int i = 0; i < Admin.getUsers().size(); i++) {
+                if (Admin.getUsers().get(i).getType().equals(Enums.UserType.NORMAL)) {
+                    removeArtistMatches(((NormalUser)Admin.getUsers().get(i)).getLikedSongs(), username);
+                }
+            }
+        }
+
+        if (type.equals(Enums.UserType.HOST)) {
+            for (int i = 0; i < Admin.getPodcasts().size(); i++) {
+                if (Admin.podcasts.get(i).getOwner().equals(username)) {
+                    Admin.podcasts.remove(i);
+                    i--;
+                }
+            }
+        }
+
+        for (int i = 0; i < Admin.getUsers().size(); i++) {
+            if (users.get(i).getUsername().equals(username)) {
+                users.remove(i);
+                break;
+            }
+        }
     }
 
     /**

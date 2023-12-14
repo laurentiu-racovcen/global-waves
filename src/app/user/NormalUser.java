@@ -7,8 +7,6 @@ import app.audio.Collections.PlaylistOutput;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
-import app.page.ArtistPage;
-import app.page.NormalUserPages.HomePage;
 import app.page.Page;
 import app.player.Player;
 import app.player.PlayerStats;
@@ -94,7 +92,6 @@ public class NormalUser extends User {
         lastSearched = true;
         ArrayList<String> results = new ArrayList<>();
         ArrayList<String> libraryEntries = searchBar.search(filters, type);
-
 //        if (searchBar.getLastSearchType().equals("song")
 //        || searchBar.getLastSearchType().equals("podcast")
 //        || searchBar.getLastSearchType().equals("playlist")
@@ -230,8 +227,8 @@ public class NormalUser extends User {
             return "Please load a source before using the shuffle function.";
         }
 
-        if (!player.getType().equals("playlist")) {
-            return "The loaded source is not a playlist.";
+        if (!player.getType().equals("playlist") && !player.getType().equals("album")) {
+            return "The loaded source is not a playlist or an album.";
         }
 
         player.shuffle(seed);

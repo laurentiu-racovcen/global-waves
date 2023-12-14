@@ -99,4 +99,12 @@ public final class Album extends AudioCollection {
         return false;
     }
 
+    public Integer getAlbumLikes() {
+        Integer likes = 0;
+        for (Song song : getSongs()) {
+            likes += song.getLikes();
+        }
+        return likes;
+    }
+
 }

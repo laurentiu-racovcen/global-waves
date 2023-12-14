@@ -104,8 +104,10 @@ public class User {
             }
 
             if (checkedUser.getSearchBar().getLastSearchType().equals("host")) {
-                if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedHost.getUsername())) {
-                    return true;
+                if (checkedUser.getSearchBar().getLastSelectedCreator() != null) {
+                    if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedHost.getUsername())) {
+                        return true;
+                    }
                 }
             }
 
@@ -162,42 +164,5 @@ public class User {
         }
     }
 
-
-    // TODO JAVADOC + hide if-for-if
-    public static void deleteCreatorFromLibrary(String username, Enums.UserType type) {
-
-        if (type.equals(Enums.UserType.ARTIST)) {
-            for (int i = 0; i < Admin.getAlbums().size(); i++) {
-                if (Admin.getAlbums().get(i).getOwner().equals(username)) {
-                    Admin.getAlbums().remove(i);
-                }
-            }
-            for (int i = 0; i < Admin.getSongs().size(); i++) {
-                if (Admin.getSongs().get(i).getArtist().equals(username)) {
-                    Admin.getSongs().remove(i);
-                }
-            }
-            // TODO - DELETE SONGS FROM LIKED SONGS ale tuturor userilor - la artist
-            for (int i = 0; i < Admin.getUsers().size(); i++) {
-                if (Admin.getUsers().get(i).getType().equals(Enums.UserType.NORMAL)) {
-                    removeArtistMatches(((NormalUser)Admin.getUsers().get(i)).getLikedSongs(), username);
-                }
-            }
-        }
-
-        if (type.equals(Enums.UserType.HOST)) {
-            for (int i = 0; i < Admin.getPodcasts().size(); i++) {
-                if (Admin.getPodcasts().get(i).getOwner().equals(username)) {
-                    Admin.getPodcasts().remove(i);
-                }
-            }
-        }
-
-        for (int i = 0; i < Admin.getUsers().size(); i++) {
-            if (Admin.getUsers().get(i).getUsername().equals(username)) {
-                Admin.getUsers().remove(i);
-            }
-        }
-    }
 
 }

@@ -13,16 +13,12 @@ import app.user.User;
 import app.utils.Enums;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.xml.XmlEscapers;
 import fileio.input.CommandInput;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static app.Admin.getUser;
-import static app.user.Artist.IsArtistInteracted;
-import static app.user.Host.IsHostInteracted;
-import static app.user.User.deleteCreatorFromLibrary;
 
 /**
  * The type Command runner.
@@ -509,6 +505,24 @@ public final class CommandRunner {
 
         return objectNode;
     }
+
+    /**
+     * Gets top 5 albums.
+     *
+     * @param commandInput the command input
+     * @return the top 5 albums
+     */
+    public static ObjectNode getTop5Albums(final CommandInput commandInput) {
+        List<String> playlists = Admin.getTop5Albums();
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("result", objectMapper.valueToTree(playlists));
+
+        return objectNode;
+    }
+
     // TODO ADD JAVADOC
     public static ObjectNode switchConnectionStatus(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
@@ -873,12 +887,34 @@ public final class CommandRunner {
         String message;
 
         if (!Admin.getUsers().stream().anyMatch(iterUser -> iterUser.getUsername().equals(commandInput.getUsername()))) {
-            message = commandInput.getUsername() + " doesn't exist.";
+            message = "The username " + commandInput.getUsername() + " doesn't exist.";
         } else if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.ARTIST))) {
                 message = commandInput.getUsername() + " is not an artist.";
         } else {
             Artist artist = (Artist) getUser(commandInput.getUsername());
             message = artist.removeAlbum(commandInput);
+        }
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
+
+        return objectNode;
+    }
+
+    // TODO ADD JAVADOC
+    public static ObjectNode removeEvent(final CommandInput commandInput) {
+        String message;
+
+        if (!Admin.getUsers().stream().anyMatch(iterUser -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+            message = commandInput.getUsername() + " doesn't exist.";
+        } else if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.ARTIST))) {
+            message = commandInput.getUsername() + " is not an artist.";
+        } else {
+            Artist artist = (Artist) getUser(commandInput.getUsername());
+            message = artist.removeEvent(commandInput);
         }
 
         ObjectNode objectNode = objectMapper.createObjectNode();
