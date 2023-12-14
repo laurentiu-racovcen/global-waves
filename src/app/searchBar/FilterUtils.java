@@ -190,7 +190,7 @@ public final class FilterUtils {
             }
         } else if (type.equals("host")) {
             for (User entry : entries) {
-                if (entry.getUsername().startsWith(name) && entry.getType().equals(Enums.UserType.ARTIST)) {
+                if (entry.getUsername().startsWith(name) && entry.getType().equals(Enums.UserType.HOST)) {
                     result.add(entry);
                 }
             }

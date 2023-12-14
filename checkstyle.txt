@@ -171,7 +171,7 @@ Starting audit...
 [ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\page\Page.java:4:5: Missing a Javadoc comment. [MissingJavadocMethod]
 [ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\player\Player.java:130: Line is longer than 100 characters (found 118). [LineLength]
 [ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\searchBar\FilterUtils.java:187: Line is longer than 100 characters (found 108). [LineLength]
-[ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\searchBar\FilterUtils.java:193: Line is longer than 100 characters (found 108). [LineLength]
+[ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\searchBar\FilterUtils.java:193: Line is longer than 100 characters (found 106). [LineLength]
 [ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\searchBar\SearchBar.java:12:40: Using the '.*' form of import should be avoided - app.searchBar.FilterUtils.*. [AvoidStarImport]
 [ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\searchBar\SearchBar.java:154: Line is longer than 100 characters (found 101). [LineLength]
 [ERROR] D:\ACS\Anul_2\POO\global-waves\etapa2\.\src\app\user\Artist.java:4:29: Using the '.*' form of import should be avoided - app.audio.Collections.*. [AvoidStarImport]

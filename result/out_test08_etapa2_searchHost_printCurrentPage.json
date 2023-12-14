@@ -34,8 +34,8 @@
   "command" : "search",
   "user" : "jack29",
   "timestamp" : 50,
-  "message" : "Search returned 0 results",
-  "results" : [ ]
+  "message" : "Search returned 1 results",
+  "results" : [ "soundseeker" ]
 }, {
   "command" : "addPodcast",
   "user" : "soundseeker",
@@ -76,7 +76,7 @@
   "command" : "select",
   "user" : "jack29",
   "timestamp" : 57,
-  "message" : "The selected ID is too high."
+  "message" : "Successfully selected soundseeker's page."
 }, {
   "command" : "search",
   "user" : "alice22",
@@ -145,7 +145,7 @@
   "user" : "jack29",
   "command" : "printCurrentPage",
   "timestamp" : 90,
-  "message" : "Liked songs:\n\t[]\n\nFollowed playlists:\n\t[]"
+  "message" : "Podcasts:\n\t[Auditory Adventures:\n\t[Exploring Sonic Landscapes - Journey through the world's most unique auditory experiences., The Future of Music Technology - A look into the innovations shaping the future of music production and listening., Cultural Beats - An exploration of how different cultures influence music genres.]\n, Harmony & History:\n\t[The Roots of Blues - Tracing the origins and evolution of blues music., Classical Music's Modern Impact - Discussing how classical music continues to influence contemporary artists., Jazz Journeys - Exploring the rich history and vibrant present of jazz music., The Folk Revival - Examining the resurgence of folk music in modern times.]\n]\n\nAnnouncements:\n\t[Announcement1:\n\tPrimul anunt adaugat!\n]"
 }, {
   "command" : "playPause",
   "user" : "alice22",
@@ -347,7 +347,7 @@
   "command" : "deleteUser",
   "user" : "soundseeker",
   "timestamp" : 4010,
-  "message" : "soundseeker was successfully deleted."
+  "message" : "soundseeker can't be deleted."
 }, {
   "command" : "status",
   "user" : "carol19",
@@ -363,5 +363,5 @@
   "command" : "deleteUser",
   "user" : "soundseeker",
   "timestamp" : 100000,
-  "message" : "The username soundseeker doesn't exist."
+  "message" : "soundseeker can't be deleted."
 } ]
