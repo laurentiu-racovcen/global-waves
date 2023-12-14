@@ -890,6 +890,28 @@ public final class CommandRunner {
         return objectNode;
     }
 
+    // TODO ADD JAVADOC
+    public static ObjectNode removePodcast(final CommandInput commandInput) {
+        String message;
+
+        if (!Admin.getUsers().stream().anyMatch(iterUser -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+            message = commandInput.getUsername() + " doesn't exist.";
+        } else if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.HOST))) {
+            message = commandInput.getUsername() + " is not a host.";
+        } else {
+            Host host = (Host) getUser(commandInput.getUsername());
+            message = host.removePodcast(commandInput);
+        }
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
+
+        return objectNode;
+    }
+
 
 
 

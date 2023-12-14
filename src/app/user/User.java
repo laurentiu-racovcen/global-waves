@@ -138,6 +138,21 @@ public class User {
     }
 
     // TODO JAVADOC
+    public static boolean NormalUserInteractsWithPodcast(final NormalUser user, final Podcast podcast) {
+        if (user.getPlayer().getSource() != null) {
+            /* verificare in player */
+            if (user.getPlayer().getType().equals("podcast")) {
+                /* se verifica daca podcast-ul ruleaza */
+                if (((Podcast) user.getPlayer().getSource().getAudioCollection()).getName().equals(podcast.getName())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // TODO JAVADOC
     public static void removeArtistMatches(ArrayList<Song> likedSongs, String artist) {
         for (int i = 0; i < likedSongs.size(); i++) {
             if (likedSongs.get(i).getArtist().equals(artist)) {

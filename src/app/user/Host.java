@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static app.Admin.getUser;
+import static app.audio.Collections.Podcast.deletePodcastFromLibrary;
 import static app.user.Artist.IsArtistInteracted;
 import static app.utils.Factories.PageFactory.createPage;
 
@@ -150,6 +151,36 @@ public class Host extends User {
         announcements.remove(foundAnnouncement);
 
         return commandInput.getUsername() + " has successfully deleted the announcement.";
+    }
+
+
+    /**
+     * Removes artist podcast
+     * @param commandInput
+     * @return message
+     */
+    public String removePodcast(final CommandInput commandInput) {
+
+        Host host = (Host) getUser(commandInput.getUsername());
+        Podcast podcast = null;
+
+        for (Podcast podcastIter : host.podcasts) {
+            if (podcastIter.getName().equals(commandInput.getName())) {
+                podcast = podcastIter;
+            }
+        }
+
+        if (podcast == null) {
+            return commandInput.getUsername() + " doesn't have a podcast with the given name.";
+        }
+
+        if (podcast.IsPodcastInteracted()){
+            return commandInput.getUsername() + " can't delete this podcast.";
+        }
+
+        deletePodcastFromLibrary(podcast, host);
+
+        return commandInput.getUsername() + " deleted the podcast successfully.";
     }
 
     /**

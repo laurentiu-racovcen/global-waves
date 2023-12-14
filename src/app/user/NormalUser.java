@@ -668,6 +668,19 @@ public class NormalUser extends User {
 
     // TODO JAVADOC
     public static void deleteUserFromDatabase(String username) {
+
+        NormalUser user = (NormalUser) getUser(username);
+
+        /* se decrementeaza numarul de follows a playlist-urilor urmarite de user */
+        for (int i = 0; i < user.getFollowedPlaylists().size(); i++) {
+            user.getFollowedPlaylists().get(i).decreaseFollowers();
+        }
+
+        /* se decrementeaza numarul de likes a melodiilor apreciate de user */
+        for (int i = 0; i < user.getLikedSongs().size(); i++) {
+            (user.getLikedSongs().get(i)).dislike();
+        }
+
         for (int i = 0; i < Admin.getUsers().size(); i++) {
             if (Admin.getUsers().get(i).getUsername().equals(username)) {
                 Admin.getUsers().remove(i);
