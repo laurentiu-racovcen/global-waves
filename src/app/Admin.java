@@ -13,6 +13,7 @@ import app.user.User;
 import app.utils.Enums;
 import fileio.input.*;
 import lombok.Getter;
+import org.apache.commons.collections.map.MultiValueMap;
 
 import java.util.*;
 
@@ -205,6 +206,17 @@ public final class Admin {
         return topPlaylists;
     }
 
+    static class AlbumComparator implements Comparator<Album> {
+        @Override
+        public int compare(Album album1, Album album2) {
+            int likesCompare = album2.getAlbumLikes() - album1.getAlbumLikes();
+            if (likesCompare == 0) {
+                likesCompare = album1.getName().compareTo(album2.getName());
+            }
+            return likesCompare;
+        }
+    }
+
     /**
      * Gets top 5 albums.
      *
@@ -212,22 +224,43 @@ public final class Admin {
      */
     public static List<String> getTop5Albums() {
 
-        /* se foloseste TreeMap, pentru ca albumele sa fie sortate
-        dupa denumirile lor direct la adaugarea in Map */
-        TreeMap<String, Integer> albumsLikes = new TreeMap<>();
-
-        for (int i=0; i < albums.size(); i++) {
-            albumsLikes.put(albums.get(i).getName(), albums.get(i).getAlbumLikes());
-        }
+        List<Album> checkedAlbums = new ArrayList<>(albums);
+        checkedAlbums.sort(new AlbumComparator());
 
         List<String> sortedAlbums = new ArrayList<>();
 
-        for (int i=0; i < LIMIT && i < albums.size(); i++) {
-            sortedAlbums.add(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
-            albumsLikes.remove(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
+        for (int i = 0; (i < checkedAlbums.size()) && (i < LIMIT); i++) {
+            sortedAlbums.add(checkedAlbums.get(i).getName());
         }
 
         return sortedAlbums;
+    }
+
+    /**
+     * Gets top 5 artists.
+     *
+     * @return the top 5 artists
+     */
+    public static List<String> getTop5Artists() {
+
+        TreeMap<String, Integer> albumsLikes = new TreeMap<>();
+
+        int artistsCount = 0;
+        for (int i=0; i < getUsers().size(); i++){
+            if (getUsers().get(i).getType().equals(Enums.UserType.ARTIST)) {
+                albumsLikes.put(getUsers().get(i).getUsername(),((Artist)getUsers().get(i)).getAllAlbumsLikes());
+                artistsCount++;
+            }
+        }
+
+        List<String> sortedArtists = new ArrayList<>();
+
+        for (int i=0; i < LIMIT && i < artistsCount; i++) {
+            sortedArtists.add(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
+            albumsLikes.remove(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
+        }
+
+        return sortedArtists;
     }
 
     /**
@@ -271,7 +304,6 @@ public final class Admin {
         if (user.getType().equals(Enums.UserType.NORMAL)) {
 
             /* se verifica daca user are vreun playlist cu numele lui PlaylistIter */
-
             for (Playlist playlist : ((NormalUser) user).getFollowedPlaylists()) {
                 if (playlist.getName().equals(playlistIter.getName())) {
                     removeFollowedPlaylist(playlistIter.getName(), ((NormalUser) user));
@@ -279,9 +311,6 @@ public final class Admin {
                 }
             }
 
-//            if (((NormalUser) user).getPlaylists().stream().anyMatch(playlist -> playlist.getName().equals(playlistIter.getName()))) {
-//                removePlaylist(playlistIter.getName(), ((NormalUser) user));
-//            }
         }
 
     }

@@ -19,8 +19,7 @@ public class Factories {
     public class PageFactory {
         public static Page createPage(Enums.PageType pageType, User user) {
             switch (pageType) {
-                case HOMEPAGE: return new HomePage(((NormalUser)user).getTop5LikedSongs(),
-                        ((NormalUser)user).getTop5FollowedPlaylists());
+                case HOMEPAGE: return new HomePage();
                 case LIKED_CONTENT_PAGE: return new LikedContentPage(
                         ((NormalUser)user).getLikedSongs(),
                         ((NormalUser)user).getFollowedPlaylists());

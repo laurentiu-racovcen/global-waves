@@ -513,7 +513,24 @@ public final class CommandRunner {
      * @return the top 5 albums
      */
     public static ObjectNode getTop5Albums(final CommandInput commandInput) {
-        List<String> playlists = Admin.getTop5Albums();
+        List<String> albums = Admin.getTop5Albums();
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("result", objectMapper.valueToTree(albums));
+
+        return objectNode;
+    }
+
+    /**
+     * Gets top 5 albums.
+     *
+     * @param commandInput the command input
+     * @return the top 5 albums
+     */
+    public static ObjectNode getTop5Artists(final CommandInput commandInput) {
+        List<String> playlists = Admin.getTop5Artists();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("command", commandInput.getCommand());

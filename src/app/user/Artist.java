@@ -258,4 +258,12 @@ public class Artist extends User {
         return commandInput.getUsername() + " deleted the album successfully.";
     }
 
+    public Integer getAllAlbumsLikes() {
+        Integer albumsLikes = 0;
+        for (Album album : getAlbums()) {
+            albumsLikes += album.getAlbumLikes();
+        }
+        return albumsLikes;
+    }
+
 }

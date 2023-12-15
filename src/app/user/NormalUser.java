@@ -7,6 +7,7 @@ import app.audio.Collections.PlaylistOutput;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
+import app.page.NormalUserPages.HomePage;
 import app.page.Page;
 import app.player.Player;
 import app.player.PlayerStats;
@@ -46,10 +47,6 @@ public class NormalUser extends User {
     private Page currentPage;
     @Getter
     private Enums.PageType currentPageType;
-    @Getter
-    ArrayList<Song> top5LikedSongs;
-    @Getter
-    ArrayList<Playlist> top5FollowedPlaylists;
     private static final Integer MAX_RESULTS = 5;
 
     /**
@@ -68,8 +65,6 @@ public class NormalUser extends User {
         searchBar = new SearchBar(username);
         lastSearched = false;
         connectionStatus = Enums.ConnectionStatus.ONLINE;
-        top5LikedSongs = new ArrayList<>();
-        top5FollowedPlaylists = new ArrayList<>();
         pages = new EnumMap<>(Enums.PageType.class);
         pages.put(Enums.PageType.HOMEPAGE,
                 createPage(Enums.PageType.HOMEPAGE, this));
@@ -300,16 +295,20 @@ public class NormalUser extends User {
 
         Song song = (Song) player.getCurrentAudioFile();
 
-        if (likedSongs.contains(song)) {
+        if ((likedSongs.stream().anyMatch(songIter -> songIter.getName().equals(song.getName())))) {
             likedSongs.remove(song);
             song.dislike();
 
             return "Unlike registered successfully.";
         }
 
+        if (likedSongs.contains(song)) {
+
+        }
+
         likedSongs.add(song);
         song.like();
-        updateTop5LikedSongs();
+
         return "Like registered successfully.";
     }
 
@@ -463,7 +462,6 @@ public class NormalUser extends User {
 
         followedPlaylists.add(playlist);
         playlist.increaseFollowers();
-        updateTop5FollowedPlaylists();
 
         return "Playlist followed successfully.";
     }
@@ -568,6 +566,8 @@ public class NormalUser extends User {
 //        switch (currentPageType) {
 //            case HOMEPAGE: return (currentPage).getPageContents();
 //        }
+        updateTop5LikedSongs();
+        updateTop5FollowedPlaylists();
         return currentPage.getPageContents();
     }
 
@@ -584,25 +584,32 @@ public class NormalUser extends User {
     }
 
     private void updateTop5LikedSongs() {
-        List<Song> songs = this.likedSongs;
-        Collections.sort(songs, new Comparator<Song>() {
-            @Override
-            public int compare(Song o1, Song o2) {
+        ArrayList<Song> songsCopy = new ArrayList<>(this.likedSongs);
 
-                return o1.getLikes() - o2.getLikes();
-            }
-        });
+//        songsCopy.sort(new Comparator<Song>() {
+//            @Override
+//            public int compare(Song o1, Song o2) {
+//
+//                return o2.getLikes() - o1.getLikes();
+//            }
+//        });
 
-        this.top5LikedSongs.clear();
+        songsCopy.sort(Comparator.comparingInt(Song::getLikes).reversed());
 
-        while (this.top5LikedSongs.size() < MAX_RESULTS && this.top5LikedSongs.size() < songs.size()) {
-            this.top5LikedSongs.add(songs.get(top5LikedSongs.size()));
+        ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().clear();
+
+        for (int i=0; i < MAX_RESULTS && ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().size() < songsCopy.size(); i++) {
+            ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().add(songsCopy.get(i));
+            System.out.print(((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().get(i).getName() + " " + ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().get(i).getLikes() + " ");
+
         }
+
+        System.out.println("\n");
     }
 
     private void updateTop5FollowedPlaylists() {
-        List<Playlist> playlists = this.followedPlaylists;
-        Collections.sort(playlists, new Comparator<Playlist>() {
+        ArrayList<Playlist> playlistsCopy = new ArrayList<>(this.followedPlaylists);
+        Collections.sort(playlistsCopy, new Comparator<Playlist>() {
             @Override
             public int compare(Playlist o1, Playlist o2) {
                  // se parcurg ambele playlist-uri curente
@@ -620,11 +627,10 @@ public class NormalUser extends User {
             }
         });
 
-        this.top5FollowedPlaylists.clear();
+        ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5FollowedPlaylists().clear();
 
-        while (this.top5FollowedPlaylists.size() < MAX_RESULTS &&
-                this.top5FollowedPlaylists.size() < playlists.size()) {
-            this.top5FollowedPlaylists.add(playlists.get(top5FollowedPlaylists.size()));
+        for (int i=0; i < MAX_RESULTS && ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5FollowedPlaylists().size() < playlistsCopy.size(); i++) {
+            ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5FollowedPlaylists().add(playlistsCopy.get(i));
         }
     }
 

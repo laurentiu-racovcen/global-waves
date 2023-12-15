@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -95,6 +96,17 @@ public final class Song extends AudioFile {
             return year > Integer.parseInt(query.substring(1));
         } else {
             return year == Integer.parseInt(query);
+        }
+    }
+
+    public static class SongComparator implements Comparator<Song> {
+        @Override
+        public int compare(Song song1, Song song2) {
+            if (song1.getLikes().equals(song2.getLikes())) {
+                return song2.getName().compareTo(song1.getName());
+            } else {
+                return song2.getLikes() - song1.getLikes();
+            }
         }
     }
 

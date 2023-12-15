@@ -9,6 +9,7 @@ import app.user.NormalUser;
 import app.user.User;
 import app.utils.Enums;
 import lombok.Getter;
+import java.util.Comparator;
 
 import java.util.*;
 
@@ -101,7 +102,7 @@ public final class Album extends AudioCollection {
 
     public Integer getAlbumLikes() {
         Integer likes = 0;
-        for (Song song : getSongs()) {
+        for (Song song : songs) {
             likes += song.getLikes();
         }
         return likes;

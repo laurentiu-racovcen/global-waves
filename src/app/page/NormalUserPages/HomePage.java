@@ -3,21 +3,19 @@ package app.page.NormalUserPages;
 import app.audio.Collections.Playlist;
 import app.audio.Files.Song;
 import app.page.Page;
+import lombok.Getter;
 
 import java.util.ArrayList;
 
 public class HomePage extends Page {
+    @Getter
     ArrayList<Song> top5LikedSongs;
+    @Getter
     ArrayList<Playlist> top5FollowedPlaylists;
 
     public HomePage() {
         top5LikedSongs = new ArrayList<>();
         top5FollowedPlaylists = new ArrayList<>();
-    }
-
-    public HomePage(ArrayList<Song> top5LikedSongs, ArrayList<Playlist> top5FollowedPlaylists) {
-        this.top5LikedSongs = top5LikedSongs;
-        this.top5FollowedPlaylists = top5FollowedPlaylists;
     }
 
     private String getLikedSongsString () {
