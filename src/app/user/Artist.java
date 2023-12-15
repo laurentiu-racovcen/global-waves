@@ -75,10 +75,7 @@ public class Artist extends User {
                 }
             }
 
-            /* daca albumul dat NU exista in library, acesta se adauga */
-            if (!Admin.getAlbums().stream().anyMatch(iterAlbum -> iterAlbum.getName().equals(album.getName()))) {
-                Admin.addAlbum(album);
-            }
+            Admin.addAlbum(album);
             albums.add(album);
 
             return commandInput.getUsername() + " has added new album successfully.";
@@ -223,7 +220,7 @@ public class Artist extends User {
         for (User user : Admin.getUsers()) {
             if (user.getType().equals(Enums.UserType.NORMAL)) {
                 if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
-                    if (NormalUserInteractsWithArtist((NormalUser) user, artist) == true) {
+                    if (NormalUserInteractsWithArtist((NormalUser) user, artist)) {
                         return true;
                     }
                 }

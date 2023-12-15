@@ -28,6 +28,10 @@ public final class SearchBar {
     @Getter
     private User lastSelectedCreator;
 
+    public void setLastSearchType(String lastSearchType) {
+        this.lastSearchType = lastSearchType;
+    }
+
     /**
      * Instantiates a new Search bar.
      *
@@ -221,5 +225,15 @@ public final class SearchBar {
 
             return lastSelectedAudio.getName();
         }
+    }
+
+    // TODO JAVADOC HERE
+    public boolean SearchesCreator(User searchedCreator) {
+        for (User user : creatorsResults) {
+            if (user.getUsername().equals(searchedCreator.getUsername())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

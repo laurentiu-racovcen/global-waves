@@ -78,6 +78,8 @@ public class NormalUser extends User {
         currentPage = pages.get(Enums.PageType.HOMEPAGE);
     }
 
+
+
     /**
      * Search array list.
      *
@@ -125,12 +127,15 @@ public class NormalUser extends User {
         if (searchBar.getLastSearchType().equals("artist")) {
             this.currentPageType = Enums.PageType.ARTIST_PAGE;
             currentPage = Artist.getArtistPage(selected);
+            this.searchBar.setLastSearchType(null);
             return "Successfully selected %s's page.".formatted(selected);
         }
 
         if (searchBar.getLastSearchType().equals("host")) {
             this.currentPageType = Enums.PageType.HOST_PAGE;
             currentPage = Host.getHostPage(selected);
+            this.searchBar.setLastSearchType(null);
+            lastSearched = false;
             return "Successfully selected %s's page.".formatted(selected);
         }
 
@@ -287,7 +292,9 @@ public class NormalUser extends User {
             return "Please load a source before liking or unliking.";
         }
 
-        if (!player.getType().equals("song") && !player.getType().equals("playlist")) {
+        if (!player.getType().equals("song")
+                && !player.getType().equals("album")
+                && !player.getType().equals("playlist")) {
             return "Loaded source is not a song.";
         }
 
@@ -685,6 +692,17 @@ public class NormalUser extends User {
             }
         }
 
+    }
+
+    // TODO JAVADOC
+    public void removeArtistMatches(String artist) {
+        for (int i = 0; i < likedSongs.size(); i++) {
+            if (likedSongs.get(i).getArtist().equals(artist)) {
+                likedSongs.remove(i);
+                updateTop5LikedSongs();
+                i--;
+            }
+        }
     }
 
     /**

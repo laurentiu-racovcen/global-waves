@@ -58,6 +58,7 @@ public class User {
         /* verificare in searchBar */
         // TODO: DE FACUT SUB FORMA DE SWITCH CASES!! SI LA CELE DE MAI SUS TOT DE FACUT.
         if (checkedUser.getSearchBar().getLastSearchType() != null) {
+
             if (checkedUser.getSearchBar().getLastSearchType().equals("song")) {
                 if (((Song) checkedUser.getSearchBar().getLastSelectedAudio()).getArtist().equals(searchedArtist.getUsername()))
                     return true;
@@ -67,11 +68,18 @@ public class User {
             }
 
             if (checkedUser.getSearchBar().getLastSearchType().equals("artist")) {
+
+                /* daca in creatorResults se afla artistul dat, se returneaza true */
+                if (checkedUser.getSearchBar().SearchesCreator(searchedArtist)) {
+                    return true;
+                }
+
                 if ((checkedUser.getSearchBar().getLastSelectedCreator() != null)) {
                     if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedArtist.getUsername())) {
                         return true;
                     }
                 }
+
             }
         }
 
@@ -82,7 +90,8 @@ public class User {
     public static boolean NormalUserInteractsWithHost(final NormalUser checkedUser, final Host searchedHost) {
         /* verificare in player */
         if (checkedUser.getPlayer().getSource() != null) {
-            if (checkedUser.getPlayer().getSource().getType().equals("podcast")) {
+            // aici alice trb sa asculte podcastul Rhythmic Dialog!!!
+            if (checkedUser.getPlayer().getSource().getType().equals(Enums.PlayerSourceType.PODCAST)) {
                 if ((checkedUser.getPlayer().getSource().getAudioCollection()).getOwner().equals(searchedHost.getUsername())) {
                     return true;
                 }
@@ -104,11 +113,17 @@ public class User {
             }
 
             if (checkedUser.getSearchBar().getLastSearchType().equals("host")) {
-                if (checkedUser.getSearchBar().getLastSelectedCreator() != null) {
-                    if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedHost.getUsername())) {
-                        return true;
-                    }
+
+                /* daca in creatorResults se afla artistul dat, se returneaza true */
+                if (checkedUser.getSearchBar().SearchesCreator(searchedHost)) {
+                    return true;
                 }
+
+//                if (checkedUser.getSearchBar().getLastSelectedCreator() != null) {
+//                    if ((checkedUser.getSearchBar().getLastSelectedCreator()).getUsername().equals(searchedHost.getUsername())) {
+//                        return true;
+//                    }
+//                }
             }
 
         }
@@ -153,16 +168,5 @@ public class User {
 
         return false;
     }
-
-    // TODO JAVADOC
-    public static void removeArtistMatches(ArrayList<Song> likedSongs, String artist) {
-        for (int i = 0; i < likedSongs.size(); i++) {
-            if (likedSongs.get(i).getArtist().equals(artist)) {
-                likedSongs.remove(i);
-                i--;
-            }
-        }
-    }
-
 
 }

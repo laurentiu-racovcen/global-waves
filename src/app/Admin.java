@@ -319,9 +319,10 @@ public final class Admin {
             }
 
             // TODO - DELETE SONGS FROM LIKED SONGS ale tuturor userilor - la artist
-            for (int i = 0; i < Admin.getUsers().size(); i++) {
-                if (Admin.getUsers().get(i).getType().equals(Enums.UserType.NORMAL)) {
-                    removeArtistMatches(((NormalUser)Admin.getUsers().get(i)).getLikedSongs(), username);
+
+            for (User user : Admin.getUsers()) {
+                if (user.getType().equals(Enums.UserType.NORMAL)) {
+                    ((NormalUser) user).removeArtistMatches(username);
                 }
             }
         }
