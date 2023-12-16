@@ -2,11 +2,11 @@ package app.user.ArtistFeatures;
 
 import lombok.Getter;
 
+@Getter
 public class Event extends ArtistFeature {
-    @Getter
-    private String date;
+    private final String date;
 
-    public Event(String name, String description, String date) {
+    public Event(final String name, final String description, final String date) {
         super(name, description);
         this.date = date;
     }

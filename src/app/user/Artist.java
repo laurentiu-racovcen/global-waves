@@ -1,32 +1,36 @@
 package app.user;
 
 import app.Admin;
-import app.audio.Collections.*;
+import app.audio.Collections.Album;
+import app.audio.Collections.AlbumOutput;
 import app.audio.Files.Song;
-import app.page.ArtistPage;
-import app.page.Page;
+import app.pages.Page;
 import app.user.ArtistFeatures.Event;
 import app.user.ArtistFeatures.Merch;
-import app.user.HostFeatures.Announcement;
 import app.utils.Enums;
 import fileio.input.CommandInput;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 
 import static app.Admin.deleteCreatorFromLibrary;
 import static app.Admin.getUser;
 import static app.utils.Factories.PageFactory.createPage;
 
+@Getter
 public class Artist extends User {
-    @Getter
     private ArrayList<Album> albums;
-    @Getter
-    ArrayList<Merch> merches;
-    @Getter
-    ArrayList<Event> events;
-    @Getter
-    private EnumMap<Enums.PageType,Page> pages;
+    private ArrayList<Merch> merches;
+    private ArrayList<Event> events;
+    private EnumMap<Enums.PageType, Page> pages;
+    private static final int DAYS_LOWER_LIMIT = 28;
+    private static final int DAYS_HIGHER_LIMIT = 31;
+    private static final int YEAR_LOWER_LIMIT = 1900;
+    private static final int YEAR_HIGHER_LIMIT = 2023;
+    private static final int MAX_MONTH = 12;
 
     /**
      * Instantiates a new Artist User.
@@ -50,7 +54,7 @@ public class Artist extends User {
      * @param commandInput      the command
      * @return the string
      */
-    public String AddAlbum(final CommandInput commandInput) {
+    public String addAlbum(final CommandInput commandInput) {
         if (albums.stream().anyMatch(album -> album.getName().equals(commandInput.getName()))) {
             return commandInput.getUsername() + " has another album with the same name.";
         } else {
@@ -59,7 +63,8 @@ public class Artist extends User {
             Set inputSet = new HashSet();
             for (Song song : commandInput.getSongs()) {
                 if (!inputSet.add(song.getName())) {
-                    return commandInput.getUsername() + " has the same song at least twice in this album.";
+                    return commandInput.getUsername()
+                            + " has the same song at least twice in this album.";
                 }
             }
 
@@ -70,7 +75,8 @@ public class Artist extends User {
             for (Song song : commandInput.getSongs()) {
                 album.addSong(song);
                 /* daca melodia data NU exista in library, aceasta se adauga */
-                if (!Admin.getSongs().stream().anyMatch(iterSong -> iterSong.getName().equals(song.getName()))) {
+                if (Admin.getSongs().stream().noneMatch(iterSong -> iterSong.getName()
+                        .equals(song.getName()))) {
                     Admin.addSong(song);
                 }
             }
@@ -100,12 +106,11 @@ public class Artist extends User {
      *
      * @return the result
      */
-    private boolean isDateValid(String date) {
-        String [] formattedDate = date.split("-");
-        System.out.println(formattedDate[0]);
+    private boolean isDateValid(final String date) {
+        String[] formattedDate = date.split("-");
 
-        if (Integer.parseInt(formattedDate[0]) > 28) {
-            if (Integer.parseInt(formattedDate[0]) > 31) {
+        if (Integer.parseInt(formattedDate[0]) > DAYS_LOWER_LIMIT) {
+            if (Integer.parseInt(formattedDate[0]) > DAYS_HIGHER_LIMIT) {
                 return false;
             }
             if (Integer.parseInt(formattedDate[1]) == 2) {
@@ -113,11 +118,12 @@ public class Artist extends User {
             }
         }
 
-        if (Integer.parseInt(formattedDate[1]) > 12) {
+        if (Integer.parseInt(formattedDate[1]) > MAX_MONTH) {
             return false;
         }
 
-        if (Integer.parseInt(formattedDate[2]) < 1900 || Integer.parseInt(formattedDate[2]) > 2023) {
+        if (Integer.parseInt(formattedDate[2]) < YEAR_LOWER_LIMIT
+                || Integer.parseInt(formattedDate[2]) > YEAR_HIGHER_LIMIT) {
             return false;
         }
 
@@ -125,12 +131,12 @@ public class Artist extends User {
     }
 
     /**
-     * Show albums array list.
+     * Adds artist event.
      *
-     * @return the array list
+     * @return the result
      */
     public String addEvent(final CommandInput commandInput) {
-        if(!isDateValid(commandInput.getDate())) {
+        if (!isDateValid(commandInput.getDate())) {
             return "Event for " + commandInput.getUsername() + " does not have a valid date.";
         }
 
@@ -148,7 +154,7 @@ public class Artist extends User {
 
     /**
      * Removes an artist event
-     * @param commandInput
+     * @param commandInput the input command
      * @return message
      */
     public String removeEvent(final CommandInput commandInput) {
@@ -161,7 +167,7 @@ public class Artist extends User {
             }
         }
 
-        if (existsUser == false) {
+        if (!existsUser) {
             return "The username " + commandInput.getUsername() + " doesn't exist.";
         }
 
@@ -183,12 +189,12 @@ public class Artist extends User {
     }
 
     /**
-     * Show albums array list.
+     * Adds merch to artist.
      *
-     * @return the array list
+     * @return the result
      */
     public String addMerch(final CommandInput commandInput) {
-        if(commandInput.getPrice() < 0) {
+        if (commandInput.getPrice() < 0) {
             return "Price for merchandise can not be negative.";
         }
 
@@ -204,26 +210,33 @@ public class Artist extends User {
         return commandInput.getUsername() + " has added new merchandise successfully.";
     }
 
-    // TODO: ADD JAVADOC
-    public static Page getArtistPage(String username) {
+    /**
+     * Gets artist page.
+     *
+     * @return the artist's page
+     */
+    public static Page getArtistPage(final String username) {
         for (User user : Admin.getUsers()) {
-            if (user.getUsername().equals(username) && user.getType().equals(Enums.UserType.ARTIST)) {
-                return ((Artist)user).getPages().get(Enums.PageType.ARTIST_PAGE);
+            if (user.getUsername().equals(username)
+                    && user.getType().equals(Enums.UserType.ARTIST)) {
+                return ((Artist) user).getPages().get(Enums.PageType.ARTIST_PAGE);
             }
         }
         return null;
     }
 
-    // TODO JAVADOC
-    public static boolean IsArtistInteracted(final String username) {
+    /**
+     * Checks if artist is interacted.
+     *
+     * @return the result
+     */
+    public static boolean isArtistInteractedBy(final String username) {
         Artist artist = (Artist) getUser(username);
         for (User user : Admin.getUsers()) {
-            if (user.getType().equals(Enums.UserType.NORMAL)) {
-                if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
-                    if (NormalUserInteractsWithArtist((NormalUser) user, artist)) {
-                        return true;
-                    }
-                }
+            if (user.getType().equals(Enums.UserType.NORMAL)
+                && ((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)
+                && ((NormalUser) user).interactsWithArtist(artist)) {
+                return true;
             }
         }
         return false;
@@ -236,7 +249,7 @@ public class Artist extends User {
      */
     public String removeAlbum(final CommandInput commandInput) {
 
-        Artist artist = (Artist)getUser(commandInput.getUsername());
+        Artist artist = (Artist) getUser(commandInput.getUsername());
         Album album = null;
 
         for (Album albumIter : artist.getAlbums()) {
@@ -249,7 +262,7 @@ public class Artist extends User {
             return commandInput.getUsername() + " doesn't have an album with the given name.";
         }
 
-        if (album.IsAlbumInteracted()){
+        if (album.isAlbumInteracted()) {
             return commandInput.getUsername() + " can't delete this album.";
         }
 
@@ -258,6 +271,10 @@ public class Artist extends User {
         return commandInput.getUsername() + " deleted the album successfully.";
     }
 
+    /**
+     * Gets all albums likes
+     * @return album likes
+     */
     public Integer getAllAlbumsLikes() {
         Integer albumsLikes = 0;
         for (Album album : getAlbums()) {
@@ -265,5 +282,4 @@ public class Artist extends User {
         }
         return albumsLikes;
     }
-
 }

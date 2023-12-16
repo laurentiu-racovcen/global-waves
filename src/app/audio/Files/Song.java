@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ public final class Song extends AudioFile {
      * @param releaseYear the release year
      * @param artist      the artist
      */
-    public Song (@JsonProperty("name") final String name,
+    public Song(@JsonProperty("name") final String name,
                  @JsonProperty("duration") final Integer duration,
                  @JsonProperty("album") final String album,
                  @JsonProperty("tags") final ArrayList<String> tags,
@@ -50,11 +49,21 @@ public final class Song extends AudioFile {
         this.likes = 0;
     }
 
+    /**
+     * Checks if this song matches with the given album name.
+     * @param albumName the album
+     * @return result
+     */
     @Override
     public boolean matchesAlbum(final String albumName) {
         return this.getAlbum().equalsIgnoreCase(albumName);
     }
 
+    /**
+     * Checks if this song matches with the given tags.
+     * @param tagsList the tags
+     * @return result
+     */
     @Override
     public boolean matchesTags(final ArrayList<String> tagsList) {
         List<String> songTags = new ArrayList<>();
@@ -69,26 +78,52 @@ public final class Song extends AudioFile {
         }
         return true;
     }
+
+    /**
+     * Checks if this song matches with the given lyrics.
+     * @param lyricFilter the tags
+     * @return result
+     */
     @Override
     public boolean matchesLyrics(final String lyricFilter) {
         return this.getLyrics().toLowerCase().contains(lyricFilter.toLowerCase());
     }
 
+    /**
+     * Checks if this song matches with the given genre.
+     * @param genreFilter the genre filter
+     * @return result
+     */
     @Override
     public boolean matchesGenre(final String genreFilter) {
         return this.getGenre().equalsIgnoreCase(genreFilter);
     }
 
+    /**
+     * Checks if this song matches with the given artist.
+     * @param artistFilter the artist filter
+     * @return result
+     */
     @Override
     public boolean matchesArtist(final String artistFilter) {
         return this.getArtist().equalsIgnoreCase(artistFilter);
     }
 
+    /**
+     * Checks if this song matches with the given release year.
+     * @param releaseYearFilter the release year filter
+     * @return result
+     */
     @Override
     public boolean matchesReleaseYear(final String releaseYearFilter) {
         return filterByYear(this.getReleaseYear(), releaseYearFilter);
     }
 
+    /**
+     * Checks if this song matches with the given year.
+     * @param year the year filter
+     * @return result
+     */
     private static boolean filterByYear(final int year, final String query) {
         if (query.startsWith("<")) {
             return year < Integer.parseInt(query.substring(1));
@@ -96,17 +131,6 @@ public final class Song extends AudioFile {
             return year > Integer.parseInt(query.substring(1));
         } else {
             return year == Integer.parseInt(query);
-        }
-    }
-
-    public static class SongComparator implements Comparator<Song> {
-        @Override
-        public int compare(Song song1, Song song2) {
-            if (song1.getLikes().equals(song2.getLikes())) {
-                return song2.getName().compareTo(song1.getName());
-            } else {
-                return song2.getLikes() - song1.getLikes();
-            }
         }
     }
 

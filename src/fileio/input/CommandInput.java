@@ -2,7 +2,6 @@ package fileio.input;
 
 import app.audio.Files.Episode;
 import app.audio.Files.Song;
-import app.page.Page;
 
 import java.util.ArrayList;
 
@@ -115,7 +114,7 @@ public final class CommandInput {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(final Integer age) {
         this.age = age;
     }
 
@@ -123,7 +122,7 @@ public final class CommandInput {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -131,7 +130,7 @@ public final class CommandInput {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -139,7 +138,7 @@ public final class CommandInput {
         return releaseYear;
     }
 
-    public void setReleaseYear(int releaseYear) {
+    public void setReleaseYear(final int releaseYear) {
         this.releaseYear = releaseYear;
     }
 
@@ -147,7 +146,7 @@ public final class CommandInput {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -155,7 +154,7 @@ public final class CommandInput {
         return songs;
     }
 
-    public void setSongs(ArrayList<Song> songs) {
+    public void setSongs(final ArrayList<Song> songs) {
         this.songs = songs;
     }
 
@@ -163,7 +162,7 @@ public final class CommandInput {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(final String date) {
         this.date = date;
     }
 
@@ -171,7 +170,7 @@ public final class CommandInput {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(final int price) {
         this.price = price;
     }
 
@@ -179,7 +178,7 @@ public final class CommandInput {
         return episodes;
     }
 
-    public void setEpisodes(ArrayList<Episode> episodes) {
+    public void setEpisodes(final ArrayList<Episode> episodes) {
         this.episodes = episodes;
     }
 
@@ -187,7 +186,7 @@ public final class CommandInput {
         return nextPage;
     }
 
-    public void setNextPage(String nextPage) {
+    public void setNextPage(final String nextPage) {
         this.nextPage = nextPage;
     }
 

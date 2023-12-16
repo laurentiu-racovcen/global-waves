@@ -1,6 +1,5 @@
 package app.audio.Collections;
 
-import app.Admin;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.utils.Enums;
@@ -72,15 +71,6 @@ public final class Playlist extends AudioCollection {
     }
 
     /**
-     * Remove song.
-     *
-     * @param index the index
-     */
-    public void removeSong(final int index) {
-        songs.remove(index);
-    }
-
-    /**
      * Switch visibility.
      */
     public void switchVisibility() {
@@ -137,9 +127,15 @@ public final class Playlist extends AudioCollection {
         }
     }
 
-    public boolean containsSongFromAlbum(Album album) {
+    /**
+     * Checks if album contains a given song
+     * @param album the album
+     * @return the result
+     */
+    public boolean containsSongFromAlbum(final Album album) {
         for (Song song : album.getSongs()) {
-            if (songs.stream().anyMatch(iterPlaylistSong -> iterPlaylistSong.getName().equals(song.getName()))) {
+            if (songs.stream().anyMatch(iterPlaylistSong
+                    -> iterPlaylistSong.getName().equals(song.getName()))) {
                 return true;
             }
         }

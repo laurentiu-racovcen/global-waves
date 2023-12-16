@@ -2,19 +2,14 @@ package app.audio.Collections;
 
 import app.Admin;
 import app.audio.Files.AudioFile;
-import app.audio.Files.Episode;
 import app.audio.Files.Song;
-import app.user.Artist;
 import app.user.NormalUser;
 import app.user.User;
 import app.utils.Enums;
 import lombok.Getter;
-import java.util.Comparator;
 
-import java.util.*;
+import java.util.ArrayList;
 
-import static app.Admin.getUser;
-import static app.user.User.NormalUserInteractsWithAlbum;
 
 /**
  * The type Album.
@@ -33,7 +28,7 @@ public final class Album extends AudioCollection {
      * @param owner the artist
      */
     public Album(final String name, final String owner,
-                 final int releaseYear, String description) {
+                 final int releaseYear, final String description) {
         super(name, owner);
         this.songs = new ArrayList<>();
         this.releaseYear = releaseYear;
@@ -87,19 +82,28 @@ public final class Album extends AudioCollection {
         return songs.get(index);
     }
 
-    public boolean IsAlbumInteracted() {
+    /**
+     * Checks if album is interacted.
+     *
+     * @return the result
+     */
+    public boolean isAlbumInteracted() {
         for (User user : Admin.getUsers()) {
-            if (user.getType().equals(Enums.UserType.NORMAL)) {
-                if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
-                    if (NormalUserInteractsWithAlbum((NormalUser) user, this) == true) {
-                        return true;
-                    }
-                }
+            if (user.getType().equals(Enums.UserType.NORMAL)
+                    && ((NormalUser) user).getConnectionStatus()
+                        .equals(Enums.ConnectionStatus.ONLINE)
+                    && ((NormalUser) user).interactsWithAlbum(this)) {
+                return true;
             }
         }
         return false;
     }
 
+    /**
+     * Gets album likes.
+     *
+     * @return the number of likes
+     */
     public Integer getAlbumLikes() {
         Integer likes = 0;
         for (Song song : songs) {

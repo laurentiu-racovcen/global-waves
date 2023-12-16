@@ -1,6 +1,5 @@
 package app;
 
-import app.audio.Collections.Album;
 import app.audio.Collections.AlbumOutput;
 import app.audio.Collections.PlaylistOutput;
 import app.audio.Collections.PodcastOutput;
@@ -28,8 +27,23 @@ public final class CommandRunner {
      * The Object mapper.
      */
     private static ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Command Runner Instance
+     */
+    private static CommandRunner commandRunnerInstance = null;
 
     private CommandRunner() {
+    }
+
+    /**
+     * Gets instance of admin
+     * @return admin instance
+     */
+    public static CommandRunner getInstance() {
+        if (commandRunnerInstance == null) {
+            commandRunnerInstance = new CommandRunner();
+        }
+        return commandRunnerInstance;
     }
 
     /**
@@ -38,7 +52,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode search(final CommandInput commandInput) {
+    public ObjectNode search(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
             return ((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
@@ -66,11 +80,11 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode select(final CommandInput commandInput) {
+    public ObjectNode select(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
-            return((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
+            return ((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
         }
 
         String message = ((NormalUser) user).select(commandInput.getItemNumber());
@@ -90,7 +104,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode load(final CommandInput commandInput) {
+    public ObjectNode load(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
             return ((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
@@ -113,7 +127,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode playPause(final CommandInput commandInput) {
+    public ObjectNode playPause(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -137,7 +151,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode repeat(final CommandInput commandInput) {
+    public ObjectNode repeat(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -161,7 +175,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode shuffle(final CommandInput commandInput) {
+    public ObjectNode shuffle(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -186,7 +200,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode forward(final CommandInput commandInput) {
+    public ObjectNode forward(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -210,7 +224,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode backward(final CommandInput commandInput) {
+    public ObjectNode backward(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -234,7 +248,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode like(final CommandInput commandInput) {
+    public ObjectNode like(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -258,7 +272,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode next(final CommandInput commandInput) {
+    public ObjectNode next(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -282,7 +296,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode prev(final CommandInput commandInput) {
+    public ObjectNode prev(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -306,7 +320,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode createPlaylist(final CommandInput commandInput) {
+    public ObjectNode createPlaylist(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -331,7 +345,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode addRemoveInPlaylist(final CommandInput commandInput) {
+    public ObjectNode addRemoveInPlaylist(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -355,7 +369,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode switchVisibility(final CommandInput commandInput) {
+    public ObjectNode switchVisibility(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         String message = ((NormalUser) user).switchPlaylistVisibility(commandInput.getPlaylistId());
 
@@ -378,7 +392,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode showPlaylists(final CommandInput commandInput) {
+    public ObjectNode showPlaylists(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         ArrayList<PlaylistOutput> playlists = ((NormalUser) user).showPlaylists();
 
@@ -397,7 +411,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode follow(final CommandInput commandInput) {
+    public ObjectNode follow(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
@@ -421,7 +435,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode status(final CommandInput commandInput) {
+    public ObjectNode status(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         PlayerStats stats = ((NormalUser) user).getPlayerStats();
 
@@ -440,7 +454,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode showLikedSongs(final CommandInput commandInput) {
+    public ObjectNode showLikedSongs(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         ArrayList<String> songs = ((NormalUser) user).showPreferredSongs();
 
@@ -459,7 +473,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the preferred genre
      */
-    public static ObjectNode getPreferredGenre(final CommandInput commandInput) {
+    public ObjectNode getPreferredGenre(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         String preferredGenre = ((NormalUser) user).getPreferredGenre();
 
@@ -478,7 +492,7 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the top 5 songs
      */
-    public static ObjectNode getTop5Songs(final CommandInput commandInput) {
+    public ObjectNode getTop5Songs(final CommandInput commandInput) {
         List<String> songs = Admin.getTop5Songs();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -493,9 +507,9 @@ public final class CommandRunner {
      * Gets top 5 playlists.
      *
      * @param commandInput the command input
-     * @return the top 5 playlists
+     * @return top 5 playlists
      */
-    public static ObjectNode getTop5Playlists(final CommandInput commandInput) {
+    public ObjectNode getTop5Playlists(final CommandInput commandInput) {
         List<String> playlists = Admin.getTop5Playlists();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -510,9 +524,9 @@ public final class CommandRunner {
      * Gets top 5 albums.
      *
      * @param commandInput the command input
-     * @return the top 5 albums
+     * @return top 5 albums
      */
-    public static ObjectNode getTop5Albums(final CommandInput commandInput) {
+    public ObjectNode getTop5Albums(final CommandInput commandInput) {
         List<String> albums = Admin.getTop5Albums();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -524,12 +538,12 @@ public final class CommandRunner {
     }
 
     /**
-     * Gets top 5 albums.
+     * Gets top 5 artists.
      *
      * @param commandInput the command input
-     * @return the top 5 albums
+     * @return top 5 artists
      */
-    public static ObjectNode getTop5Artists(final CommandInput commandInput) {
+    public ObjectNode getTop5Artists(final CommandInput commandInput) {
         List<String> playlists = Admin.getTop5Artists();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -540,14 +554,19 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode switchConnectionStatus(final CommandInput commandInput) {
+    /**
+     * Switches connection status.
+     *
+     * @param commandInput the command input
+     * @return objectNode
+     */
+    public ObjectNode switchConnectionStatus(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
         String message;
 
         if (user == null) {
             message = "The username " + commandInput.getUsername() + " doesn't exist.";
-        } else if (user.getType().equals(Enums.UserType.NORMAL)){
+        } else if (user.getType().equals(Enums.UserType.NORMAL)) {
             message = ((NormalUser) user).switchConnectionStatus();
         } else {
             message = user.getUsername() + " is not a normal user.";
@@ -561,13 +580,19 @@ public final class CommandRunner {
 
         return objectNode;
     }
-    // TODO ADD JAVADOC
-    public static ObjectNode getOnlineUsers(final CommandInput commandInput) {
+
+    /**
+     * Gets online users.
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public ObjectNode getOnlineUsers(final CommandInput commandInput) {
         List<String> result = new ArrayList<>();
 
         for (User userIter : Admin.getUsers()) {
             if (userIter.getType().equals(Enums.UserType.NORMAL)) {
-                if (((NormalUser)userIter).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
+                if (((NormalUser) userIter).getConnectionStatus()
+                        .equals(Enums.ConnectionStatus.ONLINE)) {
                     result.add(userIter.getUsername());
                 }
             }
@@ -581,8 +606,11 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static List<String> getAllNormalUsers() {
+    /**
+     * Gets all normal users.
+     * @return the result
+     */
+    public List<String> getAllNormalUsers() {
         List<String> result = new ArrayList<>();
 
         for (User user : Admin.getUsers()) {
@@ -594,8 +622,11 @@ public final class CommandRunner {
         return result;
     }
 
-    // TODO ADD JAVADOC
-    public static List<String> getAllArtists() {
+    /**
+     * Gets all artists.
+     * @return All artists
+     */
+    public List<String> getAllArtists() {
         List<String> result = new ArrayList<>();
 
         for (User user : Admin.getUsers()) {
@@ -607,8 +638,11 @@ public final class CommandRunner {
         return result;
     }
 
-    // TODO ADD JAVADOC
-    public static List<String> getAllHosts() {
+    /**
+     * Gets all hosts.
+     * @return All hosts
+     */
+    public List<String> getAllHosts() {
         List<String> result = new ArrayList<>();
 
         for (User user : Admin.getUsers()) {
@@ -620,8 +654,11 @@ public final class CommandRunner {
         return result;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode getAllUsers(final CommandInput commandInput) {
+    /**
+     * Gets all users.
+     * @return All users
+     */
+    public ObjectNode getAllUsers(final CommandInput commandInput) {
         List<String> result = new ArrayList<>();
         result.addAll(getAllNormalUsers());
         result.addAll(getAllArtists());
@@ -635,8 +672,11 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode addUser(final CommandInput commandInput) {
+    /**
+     * Adds a user.
+     * @return the object node
+     */
+    public ObjectNode addUser(final CommandInput commandInput) {
         String message = Admin.addUser(commandInput);
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -648,8 +688,11 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode deleteUser(final CommandInput commandInput) {
+    /**
+     * Deletes user.
+     * @return the output
+     */
+    public ObjectNode deleteUser(final CommandInput commandInput) {
         String message = Admin.deleteUser(commandInput);
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -661,18 +704,21 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode addAlbum(final CommandInput commandInput) {
+    /**
+     * Adds album.
+     * @return the output
+     */
+    public ObjectNode addAlbum(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         String message;
 
         if (user == null) {
             message = "The username " + commandInput.getUsername() + " doesn't exist.";
-        } else if (!user.getType().equals(Enums.UserType.ARTIST)){
+        } else if (!user.getType().equals(Enums.UserType.ARTIST)) {
             message = commandInput.getUsername() + " is not an artist.";
         } else {
-            message = ((Artist) user).AddAlbum(commandInput);
+            message = ((Artist) user).addAlbum(commandInput);
         }
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -685,15 +731,15 @@ public final class CommandRunner {
     }
 
     /**
-     * Show albums object node.
+     * Show albums.
      *
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode showAlbums(final CommandInput commandInput) {
+    public ObjectNode showAlbums(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
-        ArrayList<AlbumOutput> albums = ((Artist)user).showAlbums();
+        ArrayList<AlbumOutput> albums = ((Artist) user).showAlbums();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("command", commandInput.getCommand());
@@ -706,18 +752,17 @@ public final class CommandRunner {
 
     /**
      * Prints current page contents.
-     *
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode printCurrentPage(final CommandInput commandInput) {
+    public ObjectNode printCurrentPage(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
             return ((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
         }
 
-        String currentPage = ((NormalUser)user).printCurrentPage();
+        String currentPage = ((NormalUser) user).printCurrentPage();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("user", commandInput.getUsername());
@@ -729,22 +774,21 @@ public final class CommandRunner {
     }
 
     /**
-     * Adds new Artist event
-     *
+     * Adds new Artist event.
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode addEvent(final CommandInput commandInput) {
+    public ObjectNode addEvent(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         String message;
 
         if (user == null) {
             message = "The username " + commandInput.getUsername() + " doesn't exist.";
-        } else if (!user.getType().equals(Enums.UserType.ARTIST)){
+        } else if (!user.getType().equals(Enums.UserType.ARTIST)) {
             message = commandInput.getUsername() + " is not an artist.";
         } else {
-            message = ((Artist)user).addEvent(commandInput);
+            message = ((Artist) user).addEvent(commandInput);
         }
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -757,45 +801,22 @@ public final class CommandRunner {
     }
 
     /**
-     * Adds new Artist merch
+     * Adds new Artist merch.
      *
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode addMerch(final CommandInput commandInput) {
+    public ObjectNode addMerch(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         String message;
 
         if (user == null) {
             message = "The username " + commandInput.getUsername() + " doesn't exist.";
-        } else if (!user.getType().equals(Enums.UserType.ARTIST)){
+        } else if (!user.getType().equals(Enums.UserType.ARTIST)) {
             message = commandInput.getUsername() + " is not an artist.";
         } else {
-            message = ((Artist)user).addMerch(commandInput);
-        }
-
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.put("command", commandInput.getCommand());
-        objectNode.put("user", commandInput.getUsername());
-        objectNode.put("timestamp", commandInput.getTimestamp());
-        objectNode.put("message", message);
-
-        return objectNode;
-    }
-
-    // TODO ADD JAVADOC
-    public static ObjectNode addPodcast(final CommandInput commandInput) {
-        User user = getUser(commandInput.getUsername());
-
-        String message;
-
-        if (user == null) {
-            message = "The username " + commandInput.getUsername() + " doesn't exist.";
-        } else if (!user.getType().equals(Enums.UserType.HOST)){
-            message = commandInput.getUsername() + " is not a host.";
-        } else {
-            message = ((Host) user).AddPodcast(commandInput);
+            message = ((Artist) user).addMerch(commandInput);
         }
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -808,22 +829,20 @@ public final class CommandRunner {
     }
 
     /**
-     * Adds new Host announcement
-     *
-     * @param commandInput the command input
-     * @return the object node
+     * Gets all podcasts.
+     * @return all podcasts
      */
-    public static ObjectNode addAnnouncement(final CommandInput commandInput) {
+    public ObjectNode addPodcast(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         String message;
 
         if (user == null) {
             message = "The username " + commandInput.getUsername() + " doesn't exist.";
-        } else if (!user.getType().equals(Enums.UserType.HOST)){
+        } else if (!user.getType().equals(Enums.UserType.HOST)) {
             message = commandInput.getUsername() + " is not a host.";
         } else {
-            message = ((Host)user).addAnnouncement(commandInput);
+            message = ((Host) user).addPodcast(commandInput);
         }
 
         ObjectNode objectNode = objectMapper.createObjectNode();
@@ -835,8 +854,41 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode removeAnnouncement(final CommandInput commandInput) {
+    /**
+     * Adds new Host announcement.
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public ObjectNode addAnnouncement(final CommandInput commandInput) {
+        User user = getUser(commandInput.getUsername());
+
+        String message;
+
+        if (user == null) {
+            message = "The username " + commandInput.getUsername() + " doesn't exist.";
+        } else if (!user.getType().equals(Enums.UserType.HOST)) {
+            message = commandInput.getUsername() + " is not a host.";
+        } else {
+            message = ((Host) user).addAnnouncement(commandInput);
+        }
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("command", commandInput.getCommand());
+        objectNode.put("user", commandInput.getUsername());
+        objectNode.put("timestamp", commandInput.getTimestamp());
+        objectNode.put("message", message);
+
+        return objectNode;
+    }
+
+    /**
+     * Removes Host announcement.
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public ObjectNode removeAnnouncement(final CommandInput commandInput) {
         String message;
         if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.HOST))) {
             message = commandInput.getUsername() + " is not a host.";
@@ -860,10 +912,10 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode showPodcasts(final CommandInput commandInput) {
+    public ObjectNode showPodcasts(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
-        ArrayList<PodcastOutput> podcasts = ((Host)user).showPodcasts();
+        ArrayList<PodcastOutput> podcasts = ((Host) user).showPodcasts();
 
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("command", commandInput.getCommand());
@@ -881,14 +933,14 @@ public final class CommandRunner {
      * @param commandInput the command input
      * @return the object node
      */
-    public static ObjectNode changePage(final CommandInput commandInput) {
+    public ObjectNode changePage(final CommandInput commandInput) {
         User user = getUser(commandInput.getUsername());
 
         if (((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.OFFLINE)) {
             return ((NormalUser) user).offlineStatusOutput(objectMapper, commandInput, user);
         }
 
-        String message = ((NormalUser)user).changePage(commandInput.getNextPage());
+        String message = ((NormalUser) user).changePage(commandInput.getNextPage());
 
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("command", commandInput.getCommand());
@@ -899,12 +951,20 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode removeAlbum(final CommandInput commandInput) {
+    /**
+     * Removes album.
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public ObjectNode removeAlbum(final CommandInput commandInput) {
         String message;
 
-        if (!Admin.getUsers().stream().anyMatch(iterUser -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+        if (!Admin.getUsers().stream().anyMatch(iterUser
+                -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+
             message = "The username " + commandInput.getUsername() + " doesn't exist.";
+
         } else if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.ARTIST))) {
                 message = commandInput.getUsername() + " is not an artist.";
         } else {
@@ -921,14 +981,23 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode removeEvent(final CommandInput commandInput) {
+    /**
+     * Removes event.
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public ObjectNode removeEvent(final CommandInput commandInput) {
         String message;
 
-        if (!Admin.getUsers().stream().anyMatch(iterUser -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+        if (Admin.getUsers().stream().noneMatch(iterUser
+                -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+
             message = commandInput.getUsername() + " doesn't exist.";
+
         } else if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.ARTIST))) {
             message = commandInput.getUsername() + " is not an artist.";
+
         } else {
             Artist artist = (Artist) getUser(commandInput.getUsername());
             message = artist.removeEvent(commandInput);
@@ -943,14 +1012,23 @@ public final class CommandRunner {
         return objectNode;
     }
 
-    // TODO ADD JAVADOC
-    public static ObjectNode removePodcast(final CommandInput commandInput) {
+    /**
+     * Removes podcast.
+     *
+     * @param commandInput the command input
+     * @return the object node
+     */
+    public ObjectNode removePodcast(final CommandInput commandInput) {
         String message;
 
-        if (!Admin.getUsers().stream().anyMatch(iterUser -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+        if (!Admin.getUsers().stream().anyMatch(iterUser
+                -> iterUser.getUsername().equals(commandInput.getUsername()))) {
+
             message = commandInput.getUsername() + " doesn't exist.";
+
         } else if (!(getUser(commandInput.getUsername()).getType().equals(Enums.UserType.HOST))) {
             message = commandInput.getUsername() + " is not a host.";
+
         } else {
             Host host = (Host) getUser(commandInput.getUsername());
             message = host.removePodcast(commandInput);
@@ -964,10 +1042,4 @@ public final class CommandRunner {
 
         return objectNode;
     }
-
-
-
-
-
-
 }

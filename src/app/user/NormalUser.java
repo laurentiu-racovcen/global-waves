@@ -1,14 +1,16 @@
 package app.user;
 
 import app.Admin;
-import app.audio.Collections.AudioCollection;
 import app.audio.Collections.Playlist;
+import app.audio.Collections.AudioCollection;
 import app.audio.Collections.PlaylistOutput;
+import app.audio.Collections.Album;
+import app.audio.Collections.Podcast;
 import app.audio.Files.AudioFile;
 import app.audio.Files.Song;
 import app.audio.LibraryEntry;
-import app.page.NormalUserPages.HomePage;
-import app.page.Page;
+import app.pages.NormalUserPages.HomePage;
+import app.pages.Page;
 import app.player.Player;
 import app.player.PlayerStats;
 import app.searchBar.Filters;
@@ -19,9 +21,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.input.CommandInput;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Comparator;
+import java.util.Collections;
 
 import static app.Admin.getUser;
+import static app.utils.Enums.PageType.HOMEPAGE;
 import static app.utils.Factories.PageFactory.createPage;
 
 /**
@@ -42,7 +48,7 @@ public class NormalUser extends User {
     @Getter
     private Enums.ConnectionStatus connectionStatus;
     @Getter
-    private EnumMap<Enums.PageType,Page> pages;
+    private EnumMap<Enums.PageType, Page> pages;
     @Getter
     private Page currentPage;
     @Getter
@@ -56,7 +62,7 @@ public class NormalUser extends User {
      * @param age      the age
      * @param city     the city
      */
-    public NormalUser (final String username, final int age, final String city) {
+    public NormalUser(final String username, final int age, final String city) {
         super(username, age, city, Enums.UserType.NORMAL);
         playlists = new ArrayList<>();
         likedSongs = new ArrayList<>();
@@ -66,14 +72,12 @@ public class NormalUser extends User {
         lastSearched = false;
         connectionStatus = Enums.ConnectionStatus.ONLINE;
         pages = new EnumMap<>(Enums.PageType.class);
-        pages.put(Enums.PageType.HOMEPAGE,
-                createPage(Enums.PageType.HOMEPAGE, this));
+        pages.put(HOMEPAGE,
+                createPage(HOMEPAGE, this));
         pages.put(Enums.PageType.LIKED_CONTENT_PAGE,
                 createPage(Enums.PageType.LIKED_CONTENT_PAGE, this));
-        currentPage = pages.get(Enums.PageType.HOMEPAGE);
+        currentPage = pages.get(HOMEPAGE);
     }
-
-
 
     /**
      * Search array list.
@@ -87,17 +91,8 @@ public class NormalUser extends User {
         player.stop();
 
         lastSearched = true;
-        ArrayList<String> results = new ArrayList<>();
         ArrayList<String> libraryEntries = searchBar.search(filters, type);
-//        if (searchBar.getLastSearchType().equals("song")
-//        || searchBar.getLastSearchType().equals("podcast")
-//        || searchBar.getLastSearchType().equals("playlist")
-//        || searchBar.getLastSearchType().equals("album")) {
-        for (String libraryEntry : libraryEntries) {
-            results.add(libraryEntry);
-        }
-//        }
-        return results;
+        return new ArrayList<>(libraryEntries);
     }
 
     /**
@@ -163,7 +158,7 @@ public class NormalUser extends User {
     /**
      * Play pause string.
      *
-     * @return the string
+     * @return the result
      */
     public String playPause() {
         if (player.getCurrentAudioFile() == null) {
@@ -302,10 +297,6 @@ public class NormalUser extends User {
             return "Unlike registered successfully.";
         }
 
-        if (likedSongs.contains(song)) {
-
-        }
-
         likedSongs.add(song);
         song.like();
 
@@ -419,10 +410,11 @@ public class NormalUser extends User {
     /**
      * Show playlists array list.
      *
-     * @return the array list
+     * @return playlist outputs
      */
     public ArrayList<PlaylistOutput> showPlaylists() {
         ArrayList<PlaylistOutput> playlistOutputs = new ArrayList<>();
+
         for (Playlist playlist : playlists) {
             playlistOutputs.add(new PlaylistOutput(playlist));
         }
@@ -469,7 +461,7 @@ public class NormalUser extends User {
     /**
      * Gets player stats.
      *
-     * @return the player stats
+     * @return player stats
      */
     public PlayerStats getPlayerStats() {
         return player.getStats();
@@ -482,11 +474,34 @@ public class NormalUser extends User {
      */
     public ArrayList<String> showPreferredSongs() {
         ArrayList<String> results = new ArrayList<>();
+
         for (AudioFile audioFile : likedSongs) {
             results.add(audioFile.getName());
         }
 
         return results;
+    }
+
+    /**
+     * Gets most liked index.
+     *
+     * @return the index
+     */
+    public int getMostLikedIndex(final Song song, final String[] genres) {
+        int[] counts = new int[genres.length];
+        int mostLikedIndex = -1;
+        int mostLikedCount = 0;
+        for (int i = 0; i < genres.length; i++) {
+            if (song.getGenre().equals(genres[i])) {
+                counts[i]++;
+                if (counts[i] > mostLikedCount) {
+                    mostLikedCount = counts[i];
+                    mostLikedIndex = i;
+                }
+                break;
+            }
+        }
+        return mostLikedIndex;
     }
 
     /**
@@ -496,21 +511,9 @@ public class NormalUser extends User {
      */
     public String getPreferredGenre() {
         String[] genres = {"pop", "rock", "rap"};
-        int[] counts = new int[genres.length];
         int mostLikedIndex = -1;
-        int mostLikedCount = 0;
-
         for (Song song : likedSongs) {
-            for (int i = 0; i < genres.length; i++) {
-                if (song.getGenre().equals(genres[i])) {
-                    counts[i]++;
-                    if (counts[i] > mostLikedCount) {
-                        mostLikedCount = counts[i];
-                        mostLikedIndex = i;
-                    }
-                    break;
-                }
-            }
+            mostLikedIndex = getMostLikedIndex(song, genres);
         }
 
         String preferredGenre = mostLikedIndex != -1 ? genres[mostLikedIndex] : "unknown";
@@ -520,7 +523,7 @@ public class NormalUser extends User {
     /**
      * Switches connection status.
      *
-     * @return current connection status
+     * @return result
      */
     public String switchConnectionStatus() {
         if (connectionStatus == Enums.ConnectionStatus.OFFLINE) {
@@ -532,7 +535,14 @@ public class NormalUser extends User {
         return super.getUsername() + " has changed status successfully.";
     }
 
-    public ObjectNode offlineStatusOutput(ObjectMapper objectMapper, CommandInput commandInput, User user) {
+    /**
+     * Generates offline status output.
+     *
+     * @return ObjectNode
+     */
+    public ObjectNode offlineStatusOutput(final ObjectMapper objectMapper,
+                                          final CommandInput commandInput,
+                                          final User user) {
         ObjectNode objectNode = objectMapper.createObjectNode();
 
         if (commandInput.getCommand().equals("printCurrentPage")) {
@@ -542,38 +552,41 @@ public class NormalUser extends User {
             objectNode.put("command", commandInput.getCommand());
             objectNode.put("user", commandInput.getUsername());
         }
+
         objectNode.put("timestamp", commandInput.getTimestamp());
         objectNode.put("message", user.getUsername() + " is offline.");
 
-        // TODO: CHANGE CASES TO A SIMPLE FORM BASED ON ENUM WITH COMMANDS
-        if (commandInput.getCommand().equals("search")
-        ) {
+        if (commandInput.getCommand().equals("search")) {
             objectNode.put("results", objectMapper.valueToTree(new ArrayList<String>()));
-        } else if (commandInput.getCommand().equals("showPlaylists")
-                || commandInput.getCommand().equals("showPreferredSongs")
-                || commandInput.getCommand().equals("getPreferredGenre")
-                || commandInput.getCommand().equals("getTop5Songs")
-                || commandInput.getCommand().equals("getTop5Playlists")
-                || commandInput.getCommand().equals("getOnlineUsers")
-        ) {
+        } else if (commandInput.getCommand()
+                .matches("showPlaylists|showPreferredSongs|getPreferredGenre"
+                        + "|getTop5Songs|getTop5Playlists|getOnlineUsers")) {
             objectNode.put("result", objectMapper.valueToTree(new ArrayList<String>()));
         }
 
         return objectNode;
     }
 
+    /**
+     * Prints current page of normal user.
+     *
+     * @return ObjectNode
+     */
     public String printCurrentPage() {
-//        switch (currentPageType) {
-//            case HOMEPAGE: return (currentPage).getPageContents();
-//        }
         updateTop5LikedSongs();
         updateTop5FollowedPlaylists();
         return currentPage.getPageContents();
     }
 
-    public String changePage(String nextPage) {
+    /**
+     * Change current page.
+     *
+     * @return ObjectNode
+     */
+    public String changePage(final String nextPage) {
+
         if (nextPage.equals("Home")) {
-            currentPage = pages.get(Enums.PageType.HOMEPAGE);
+            currentPage = pages.get(HOMEPAGE);
             return getUsername() + " accessed Home successfully.";
         } else if (nextPage.equals("LikedContent")) {
             currentPage = pages.get(Enums.PageType.LIKED_CONTENT_PAGE);
@@ -581,39 +594,34 @@ public class NormalUser extends User {
         } else {
             return getUsername() + " is trying to access a non-existent page.";
         }
+
     }
 
+    /**
+     * Updates Top5LikedSongs.
+     */
     private void updateTop5LikedSongs() {
         ArrayList<Song> songsCopy = new ArrayList<>(this.likedSongs);
 
-//        songsCopy.sort(new Comparator<Song>() {
-//            @Override
-//            public int compare(Song o1, Song o2) {
-//
-//                return o2.getLikes() - o1.getLikes();
-//            }
-//        });
-
         songsCopy.sort(Comparator.comparingInt(Song::getLikes).reversed());
 
-        ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().clear();
+        ((HomePage) this.getPages().get(HOMEPAGE)).getTop5LikedSongs().clear();
 
-        for (int i=0; i < MAX_RESULTS && ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().size() < songsCopy.size(); i++) {
-            ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().add(songsCopy.get(i));
-            System.out.print(((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().get(i).getName() + " " + ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5LikedSongs().get(i).getLikes() + " ");
+        for (int i = 0; i < MAX_RESULTS && ((HomePage) this.getPages().get(HOMEPAGE))
+                .getTop5LikedSongs().size() < songsCopy.size(); i++) {
 
+            ((HomePage) this.getPages().get(HOMEPAGE)).getTop5LikedSongs().add(songsCopy.get(i));
         }
-
-        System.out.println("\n");
     }
 
+    /**
+     * Updates Top5FollowedPlaylists.
+     */
     private void updateTop5FollowedPlaylists() {
         ArrayList<Playlist> playlistsCopy = new ArrayList<>(this.followedPlaylists);
         Collections.sort(playlistsCopy, new Comparator<Playlist>() {
             @Override
-            public int compare(Playlist o1, Playlist o2) {
-                 // se parcurg ambele playlist-uri curente
-                 // si se aduna like-urile acestora
+            public int compare(final Playlist o1, final Playlist o2) {
                 int likesCount1 = 0;
                 int likesCount2 = 0;
                 for (Song iterSong : o1.getSongs()) {
@@ -627,19 +635,179 @@ public class NormalUser extends User {
             }
         });
 
-        ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5FollowedPlaylists().clear();
+        ((HomePage) this.getPages().get(HOMEPAGE)).getTop5FollowedPlaylists().clear();
 
-        for (int i=0; i < MAX_RESULTS && ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5FollowedPlaylists().size() < playlistsCopy.size(); i++) {
-            ((HomePage)this.getPages().get(Enums.PageType.HOMEPAGE)).getTop5FollowedPlaylists().add(playlistsCopy.get(i));
+        for (int i = 0; i < MAX_RESULTS && ((HomePage) this.getPages().get(HOMEPAGE))
+                .getTop5FollowedPlaylists().size() < playlistsCopy.size(); i++) {
+
+            ((HomePage) this.getPages().get(HOMEPAGE)).getTop5FollowedPlaylists()
+                    .add(playlistsCopy.get(i));
+
         }
     }
 
-    // TODO JAVADOC
-    public boolean InteractsWithNormalUser(final NormalUser interactedUser) {
+    /**
+     * Checks if interacts with normal user
+     *
+     * @return ObjectNode
+     */
+    public boolean interactsWithNormalUser(final NormalUser interactedUser) {
+        /* verificare in player */
+        if (this.getPlayer().getSource() != null
+               && this.getPlayer().getSource().getType().equals(Enums.PlayerSourceType.PLAYLIST)) {
+            return (this.getPlayer().getSource().getAudioCollection()).getOwner()
+                    .equals(interactedUser.getUsername());
+        }
+        return false;
+    }
+
+    /**
+     * Checks if normal user interacts with artist
+     *
+     * @return result
+     */
+    public boolean interactsWithArtist(final Artist searchedArtist) {
+        if (this.getPlayer().getSource() != null) {
+            /* verificare in player */
+            if (this.getPlayer().getType().equals("song")) {
+                if (((Song) this.getPlayer().getSource().getAudioFile()).getArtist()
+                        .equals(searchedArtist.getUsername())) {
+                    return true;
+                }
+            } else if (this.getPlayer().getType().equals("album")) {
+                if ((this.getPlayer().getSource().getAudioCollection()).getOwner()
+                        .equals(searchedArtist.getUsername())) {
+                    return true;
+                }
+            }
+        }
+
+        /* verificare in currentPage */
+        if (this.getCurrentPage() == searchedArtist.getPages().get(Enums.PageType.ARTIST_PAGE)) {
+            return true;
+        }
+
+        /* verificare in searchBar */
+        if (this.getSearchBar().getLastSearchType() != null) {
+            switch (this.getSearchBar().getLastSearchType()) {
+                case "song":
+                    if (((Song) this.getSearchBar().getLastSelectedAudio())
+                            .getArtist().equals(searchedArtist.getUsername())) {
+                        return true;
+                    }
+                    break;
+                case "album":
+                    if (((Album) this.getSearchBar().getLastSelectedAudio())
+                            .getOwner().equals(searchedArtist.getUsername())) {
+                        return true;
+                    }
+                    break;
+                case "artist":
+                    if (this.getSearchBar().searchesCreator(searchedArtist)) {
+                        return true;
+                    }
+                    if ((this.getSearchBar().getLastSelectedCreator() != null)) {
+                        if ((this.getSearchBar().getLastSelectedCreator())
+                                .getUsername().equals(searchedArtist.getUsername())) {
+                            return true;
+                        }
+                    }
+                    break;
+                default:
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Checks if normal user interacts with host
+     *
+     * @return result
+     */
+    public boolean interactsWithHost(final Host searchedHost) {
         /* verificare in player */
         if (this.getPlayer().getSource() != null) {
-            if (this.getPlayer().getSource().getType().equals(Enums.PlayerSourceType.PLAYLIST)) {
-                if ((this.getPlayer().getSource().getAudioCollection()).getOwner().equals(interactedUser.getUsername())) {
+            if (this.getPlayer().getSource().getType().equals(Enums.PlayerSourceType.PODCAST)
+                && (this.getPlayer().getSource().getAudioCollection()).getOwner()
+                        .equals(searchedHost.getUsername())) {
+                return true;
+            }
+        }
+
+        /* verificare in currentPage */
+        if (this.getCurrentPage() == searchedHost.getPages().get(Enums.PageType.HOST_PAGE)) {
+            return true;
+        }
+
+        /* verificare in searchBar */
+        if (this.getSearchBar().getLastSearchType() != null) {
+            switch (this.getSearchBar().getLastSearchType()) {
+                case "podcast":
+                    if (((Podcast) this.getSearchBar().getLastSelectedAudio())
+                            .getOwner().equals(searchedHost.getUsername())) {
+                        return true;
+                    }
+                    break;
+                case "host":
+                    if (this.getSearchBar().searchesCreator(searchedHost)) {
+                        return true;
+                    }
+                    break;
+                default:
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if normal user interacts with album
+     *
+     * @return result
+     */
+    public boolean interactsWithAlbum(final Album album) {
+        if (this.getPlayer().getSource() != null) {
+            switch (this.getPlayer().getType()) {
+                case "song":
+                    /* se verifica daca albumul dat contine vreo melodie care ruleaza */
+                    if (((Song) this.getPlayer().getSource().getAudioFile())
+                            .getAlbum().equals(album.getName())) {
+                        return true;
+                    }
+                    break;
+                case "album":
+                    if ((this.getPlayer().getSource().getAudioCollection())
+                            .getName().equals(album.getName())) {
+                        return true;
+                    }
+                    break;
+                case "playlist":
+                    if (((Playlist) (this.getPlayer().getSource()
+                            .getAudioCollection())).containsSongFromAlbum(album)) {
+                        return true;
+                    }
+                    break;
+                default:
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if normal user interacts with podcast
+     *
+     * @return result
+     */
+    public boolean interactsWithPodcast(final Podcast podcast) {
+        if (this.getPlayer().getSource() != null) {
+            /* verificare in player */
+            if (this.getPlayer().getType().equals("podcast")) {
+                /* se verifica daca podcast-ul ruleaza */
+                if (((Podcast) this.getPlayer().getSource().getAudioCollection()).getName()
+                        .equals(podcast.getName())) {
                     return true;
                 }
             }
@@ -648,23 +816,28 @@ public class NormalUser extends User {
         return false;
     }
 
-    // TODO JAVADOC, aici se verifica daca un user este interactionat de alt user dat prin parametru
-    public boolean IsNormalUserInteractedBy(final String username) {
-        NormalUser normalUser = (NormalUser) getUser(username);
-        for (User iterUser : Admin.getUsers()) {
-            if (iterUser.getType().equals(Enums.UserType.NORMAL)) {
-                if (((NormalUser)iterUser).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
-                    if (((NormalUser)iterUser).InteractsWithNormalUser(normalUser)) {
-                        return true;
-                    }
-                }
-            }
-        }
+    /**
+     * Checks if a user is interacted by another user
+     *
+     * @return result
+     */
+    public boolean isNormalUserInteractedBy(final String username) {
+       NormalUser normalUser = (NormalUser) getUser(username);
+       for (User iterUser : Admin.getUsers()) {
+          if (iterUser.getType().equals(Enums.UserType.NORMAL)) {
+             if (((NormalUser) iterUser).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)
+                    && ((NormalUser) iterUser).interactsWithNormalUser(normalUser)) {
+                    return true;
+             }
+          }
+       }
         return false;
     }
 
-    // TODO JAVADOC + hide if-for-if
-    public static void removeFollowedPlaylist(String playlistName, NormalUser user) {
+    /**
+     * Removes followed playlist.
+     */
+    public static void removeFollowedPlaylist(final String playlistName, final NormalUser user) {
 
         for (int i = 0; i < user.getFollowedPlaylists().size(); i++) {
             if (user.getFollowedPlaylists().get(i).getName().equals(playlistName)) {
@@ -676,8 +849,10 @@ public class NormalUser extends User {
 
     }
 
-    // TODO JAVADOC
-    public static void deleteUserFromDatabase(String username) {
+    /**
+     * Deletes user from database.
+     */
+    public static void deleteUserFromDatabase(final String username) {
 
         NormalUser user = (NormalUser) getUser(username);
 
@@ -700,8 +875,10 @@ public class NormalUser extends User {
 
     }
 
-    // TODO JAVADOC
-    public void removeArtistMatches(String artist) {
+    /**
+     * Deletes songs from likedSongs that match with the artist.
+     */
+    public void removeArtistMatches(final String artist) {
         for (int i = 0; i < likedSongs.size(); i++) {
             if (likedSongs.get(i).getArtist().equals(artist)) {
                 likedSongs.remove(i);

@@ -78,61 +78,61 @@ public final class Main {
                                                                   CommandInput[].class);
         ArrayNode outputs = objectMapper.createArrayNode();
 
-        Admin admin = Admin.getInstance();
+        Admin.setUsers(library.getUsers());
+        Admin.setSongs(library.getSongs());
+        Admin.setPodcasts(library.getPodcasts());
 
-        admin.setUsers(library.getUsers());
-        admin.setSongs(library.getSongs());
-        admin.setPodcasts(library.getPodcasts());
+        CommandRunner commandRunner = CommandRunner.getInstance();
 
         for (CommandInput command : commands) {
-            admin.updateTimestamp(command.getTimestamp());
+            Admin.updateTimestamp(command.getTimestamp());
 
             String commandName = command.getCommand();
 
             switch (commandName) {
-                case "search" -> outputs.add(CommandRunner.search(command));
-                case "select" -> outputs.add(CommandRunner.select(command));
-                case "load" -> outputs.add(CommandRunner.load(command));
-                case "playPause" -> outputs.add(CommandRunner.playPause(command));
-                case "repeat" -> outputs.add(CommandRunner.repeat(command));
-                case "shuffle" -> outputs.add(CommandRunner.shuffle(command));
-                case "forward" -> outputs.add(CommandRunner.forward(command));
-                case "backward" -> outputs.add(CommandRunner.backward(command));
-                // TODO de vazut daca se updateaza top5 in homepage si cand se updateaza
-                case "like" -> outputs.add(CommandRunner.like(command));
-                case "next" -> outputs.add(CommandRunner.next(command));
-                case "prev" -> outputs.add(CommandRunner.prev(command));
-                case "createPlaylist" -> outputs.add(CommandRunner.createPlaylist(command));
+                case "search" -> outputs.add(commandRunner.search(command));
+                case "select" -> outputs.add(commandRunner.select(command));
+                case "load" -> outputs.add(commandRunner.load(command));
+                case "playPause" -> outputs.add(commandRunner.playPause(command));
+                case "repeat" -> outputs.add(commandRunner.repeat(command));
+                case "shuffle" -> outputs.add(commandRunner.shuffle(command));
+                case "forward" -> outputs.add(commandRunner.forward(command));
+                case "backward" -> outputs.add(commandRunner.backward(command));
+                case "like" -> outputs.add(commandRunner.like(command));
+                case "next" -> outputs.add(commandRunner.next(command));
+                case "prev" -> outputs.add(commandRunner.prev(command));
+                case "createPlaylist" -> outputs.add(commandRunner.createPlaylist(command));
                 case "addRemoveInPlaylist" ->
-                        outputs.add(CommandRunner.addRemoveInPlaylist(command));
-                case "switchVisibility" -> outputs.add(CommandRunner.switchVisibility(command));
-                case "showPlaylists" -> outputs.add(CommandRunner.showPlaylists(command));
-                case "follow" -> outputs.add(CommandRunner.follow(command));
-                case "status" -> outputs.add(CommandRunner.status(command));
-                case "showPreferredSongs" -> outputs.add(CommandRunner.showLikedSongs(command));
-                case "getPreferredGenre" -> outputs.add(CommandRunner.getPreferredGenre(command));
-                case "getTop5Songs" -> outputs.add(CommandRunner.getTop5Songs(command));
-                case "getTop5Playlists" -> outputs.add(CommandRunner.getTop5Playlists(command));
-                case "switchConnectionStatus" -> outputs.add(CommandRunner.switchConnectionStatus(command));
-                case "addUser" -> outputs.add(CommandRunner.addUser(command));
-                case "addAlbum" -> outputs.add(CommandRunner.addAlbum(command));
-                case "showAlbums" -> outputs.add(CommandRunner.showAlbums(command));
-                case "printCurrentPage" -> outputs.add(CommandRunner.printCurrentPage(command));
-                case "addEvent" -> outputs.add(CommandRunner.addEvent(command));
-                case "addMerch" -> outputs.add(CommandRunner.addMerch(command));
-                case "getOnlineUsers" -> outputs.add(CommandRunner.getOnlineUsers(command));
-                case "getAllUsers" -> outputs.add(CommandRunner.getAllUsers(command));
-                case "deleteUser" -> outputs.add(CommandRunner.deleteUser(command));
-                case "addPodcast" -> outputs.add(CommandRunner.addPodcast(command));
-                case "addAnnouncement" -> outputs.add(CommandRunner.addAnnouncement(command));
-                case "removeAnnouncement" -> outputs.add(CommandRunner.removeAnnouncement(command));
-                case "showPodcasts" -> outputs.add(CommandRunner.showPodcasts(command));
-                case "changePage" -> outputs.add(CommandRunner.changePage(command));
-                case "removeAlbum" -> outputs.add(CommandRunner.removeAlbum(command));
-                case "removePodcast" -> outputs.add(CommandRunner.removePodcast(command));
-                case "removeEvent" -> outputs.add(CommandRunner.removeEvent(command));
-                case "getTop5Albums" -> outputs.add(CommandRunner.getTop5Albums(command));
-                case "getTop5Artists" -> outputs.add(CommandRunner.getTop5Artists(command));
+                        outputs.add(commandRunner.addRemoveInPlaylist(command));
+                case "switchVisibility" -> outputs.add(commandRunner.switchVisibility(command));
+                case "showPlaylists" -> outputs.add(commandRunner.showPlaylists(command));
+                case "follow" -> outputs.add(commandRunner.follow(command));
+                case "status" -> outputs.add(commandRunner.status(command));
+                case "showPreferredSongs" -> outputs.add(commandRunner.showLikedSongs(command));
+                case "getPreferredGenre" -> outputs.add(commandRunner.getPreferredGenre(command));
+                case "getTop5Songs" -> outputs.add(commandRunner.getTop5Songs(command));
+                case "getTop5Playlists" -> outputs.add(commandRunner.getTop5Playlists(command));
+                case "switchConnectionStatus" ->
+                        outputs.add(commandRunner.switchConnectionStatus(command));
+                case "addUser" -> outputs.add(commandRunner.addUser(command));
+                case "addEvent" -> outputs.add(commandRunner.addEvent(command));
+                case "addMerch" -> outputs.add(commandRunner.addMerch(command));
+                case "printCurrentPage" -> outputs.add(commandRunner.printCurrentPage(command));
+                case "addPodcast" -> outputs.add(commandRunner.addPodcast(command));
+                case "addAnnouncement" -> outputs.add(commandRunner.addAnnouncement(command));
+                case "removeAnnouncement" -> outputs.add(commandRunner.removeAnnouncement(command));
+                case "showPodcasts" -> outputs.add(commandRunner.showPodcasts(command));
+                case "changePage" -> outputs.add(commandRunner.changePage(command));
+                case "deleteUser" -> outputs.add(commandRunner.deleteUser(command));
+                case "addAlbum" -> outputs.add(commandRunner.addAlbum(command));
+                case "showAlbums" -> outputs.add(commandRunner.showAlbums(command));
+                case "removeAlbum" -> outputs.add(commandRunner.removeAlbum(command));
+                case "removePodcast" -> outputs.add(commandRunner.removePodcast(command));
+                case "removeEvent" -> outputs.add(commandRunner.removeEvent(command));
+                case "getOnlineUsers" -> outputs.add(commandRunner.getOnlineUsers(command));
+                case "getAllUsers" -> outputs.add(commandRunner.getAllUsers(command));
+                case "getTop5Albums" -> outputs.add(commandRunner.getTop5Albums(command));
+                case "getTop5Artists" -> outputs.add(commandRunner.getTop5Artists(command));
                 default -> System.out.println("Invalid command " + commandName);
             }
         }
@@ -140,6 +140,6 @@ public final class Main {
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), outputs);
 
-        admin.reset();
+        Admin.reset();
     }
 }

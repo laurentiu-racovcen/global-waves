@@ -9,7 +9,18 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static app.searchBar.FilterUtils.*;
+import static app.searchBar.FilterUtils.filterByAlbum;
+import static app.searchBar.FilterUtils.filterByArtist;
+import static app.searchBar.FilterUtils.filterByDescription;
+import static app.searchBar.FilterUtils.filterByFollowers;
+import static app.searchBar.FilterUtils.filterByLyrics;
+import static app.searchBar.FilterUtils.filterByGenre;
+import static app.searchBar.FilterUtils.filterByName;
+import static app.searchBar.FilterUtils.filterByTags;
+import static app.searchBar.FilterUtils.filterByReleaseYear;
+import static app.searchBar.FilterUtils.filterByPlaylistVisibility;
+import static app.searchBar.FilterUtils.filterByOwner;
+import static app.searchBar.FilterUtils.filterCreatorsByName;
 
 /**
  * The type Search bar.
@@ -28,7 +39,7 @@ public final class SearchBar {
     @Getter
     private User lastSelectedCreator;
 
-    public void setLastSearchType(String lastSearchType) {
+    public void setLastSearchType(final String lastSearchType) {
         this.lastSearchType = lastSearchType;
     }
 
@@ -53,6 +64,131 @@ public final class SearchBar {
     }
 
     /**
+     * Search song
+     * @param filters the filters
+     * @return list of library entries
+     */
+    public List<LibraryEntry> searchSong(final Filters filters) {
+        List<LibraryEntry> audioEntries = new ArrayList<>(Admin.getSongs());
+
+        if (filters.getName() != null) {
+            audioEntries = filterByName(audioEntries, filters.getName());
+        }
+
+        if (filters.getAlbum() != null) {
+            audioEntries = filterByAlbum(audioEntries, filters.getAlbum());
+        }
+
+        if (filters.getTags() != null) {
+            audioEntries = filterByTags(audioEntries, filters.getTags());
+        }
+
+        if (filters.getLyrics() != null) {
+            audioEntries = filterByLyrics(audioEntries, filters.getLyrics());
+        }
+
+        if (filters.getGenre() != null) {
+            audioEntries = filterByGenre(audioEntries, filters.getGenre());
+        }
+
+        if (filters.getReleaseYear() != null) {
+            audioEntries = filterByReleaseYear(audioEntries, filters.getReleaseYear());
+        }
+
+        if (filters.getArtist() != null) {
+            audioEntries = filterByArtist(audioEntries, filters.getArtist());
+        }
+
+        this.audioResults = audioEntries;
+        return audioEntries;
+    }
+
+    /**
+     * Search playlist
+     * @param filters the filters
+     * @return list of library entries
+     */
+    public List<LibraryEntry> searchPlaylist(final Filters filters) {
+        List<LibraryEntry> audioEntries = new ArrayList<>(Admin.getPlaylists());
+
+        audioEntries = filterByPlaylistVisibility(audioEntries, user);
+
+        if (filters.getName() != null) {
+            audioEntries = filterByName(audioEntries, filters.getName());
+        }
+
+        if (filters.getOwner() != null) {
+            audioEntries = filterByOwner(audioEntries, filters.getOwner());
+        }
+
+        if (filters.getFollowers() != null) {
+            audioEntries = filterByFollowers(audioEntries, filters.getFollowers());
+        }
+
+        this.audioResults = audioEntries;
+        return audioEntries;
+    }
+
+    /**
+     * Search podcast
+     * @param filters the filters
+     * @return list of library entries
+     */
+    public List<LibraryEntry> searchPodcast(final Filters filters) {
+        List<LibraryEntry> audioEntries = new ArrayList<>(Admin.getPodcasts());
+
+        if (filters.getName() != null) {
+            audioEntries = filterByName(audioEntries, filters.getName());
+        }
+
+        if (filters.getOwner() != null) {
+            audioEntries = filterByOwner(audioEntries, filters.getOwner());
+        }
+
+        this.audioResults = audioEntries;
+        return audioEntries;
+    }
+
+    /**
+     * Search album
+     * @param filters the filters
+     * @return list of library entries
+     */
+    public List<LibraryEntry> searchAlbum(final Filters filters) {
+        List<LibraryEntry> audioEntries = new ArrayList<>(Admin.getAlbums());
+
+        if (filters.getName() != null) {
+            audioEntries = filterByName(audioEntries, filters.getName());
+        }
+
+        if (filters.getOwner() != null) {
+            audioEntries = filterByOwner(audioEntries, filters.getOwner());
+        }
+
+        if (filters.getDescription() != null) {
+            audioEntries = filterByDescription(audioEntries, filters.getDescription());
+        }
+
+        this.audioResults = audioEntries;
+        return audioEntries;
+    }
+
+    /**
+     * Search creator
+     * @param filters the filters
+     * @return list of users
+     */
+    public List<User> searchCreator(final Filters filters, final String type) {
+        List<User> creatorsEntries = new ArrayList<>(Admin.getUsers());
+
+        if (filters.getName() != null) {
+            creatorsEntries = filterCreatorsByName(creatorsEntries, filters.getName(), type);
+        }
+        this.creatorsResults = creatorsEntries;
+        return creatorsEntries;
+    }
+
+    /**
      * Search list.
      *
      * @param filters the filters
@@ -65,102 +201,21 @@ public final class SearchBar {
 
         switch (type) {
             case "song":
-                audioEntries = new ArrayList<>(Admin.getSongs());
-
-                if (filters.getName() != null) {
-                    audioEntries = filterByName(audioEntries, filters.getName());
-                }
-
-                if (filters.getAlbum() != null) {
-                    audioEntries = filterByAlbum(audioEntries, filters.getAlbum());
-                }
-
-                if (filters.getTags() != null) {
-                    audioEntries = filterByTags(audioEntries, filters.getTags());
-                }
-
-                if (filters.getLyrics() != null) {
-                    audioEntries = filterByLyrics(audioEntries, filters.getLyrics());
-                }
-
-                if (filters.getGenre() != null) {
-                    audioEntries = filterByGenre(audioEntries, filters.getGenre());
-                }
-
-                if (filters.getReleaseYear() != null) {
-                    audioEntries = filterByReleaseYear(audioEntries, filters.getReleaseYear());
-                }
-
-                if (filters.getArtist() != null) {
-                    audioEntries = filterByArtist(audioEntries, filters.getArtist());
-                }
-
-                this.audioResults = audioEntries;
-
+                audioEntries = searchSong(filters);
                 break;
             case "playlist":
-                audioEntries = new ArrayList<>(Admin.getPlaylists());
-
-                audioEntries = filterByPlaylistVisibility(audioEntries, user);
-
-                if (filters.getName() != null) {
-                    audioEntries = filterByName(audioEntries, filters.getName());
-                }
-
-                if (filters.getOwner() != null) {
-                    audioEntries = filterByOwner(audioEntries, filters.getOwner());
-                }
-
-                if (filters.getFollowers() != null) {
-                    audioEntries = filterByFollowers(audioEntries, filters.getFollowers());
-                }
-
-                this.audioResults = audioEntries;
-
+                audioEntries = searchPlaylist(filters);
                 break;
             case "podcast":
-                audioEntries = new ArrayList<>(Admin.getPodcasts());
-
-                if (filters.getName() != null) {
-                    audioEntries = filterByName(audioEntries, filters.getName());
-                }
-
-                if (filters.getOwner() != null) {
-                    audioEntries = filterByOwner(audioEntries, filters.getOwner());
-                }
-
-                this.audioResults = audioEntries;
-
+                audioEntries = searchPodcast(filters);
                 break;
             case "album":
-                audioEntries = new ArrayList<>(Admin.getAlbums());
-
-                if (filters.getName() != null) {
-                    audioEntries = filterByName(audioEntries, filters.getName());
-                }
-
-                if (filters.getOwner() != null) {
-                    audioEntries = filterByOwner(audioEntries, filters.getOwner());
-                }
-
-                if (filters.getDescription() != null) {
-                    audioEntries = filterByDescription(audioEntries, filters.getDescription());
-                }
-
-                this.audioResults = audioEntries;
-
+                audioEntries = searchAlbum(filters);
                 break;
             case "artist":
             case "host":
-                creatorsEntries = new ArrayList<>(Admin.getUsers());
-
-                if (filters.getName() != null) {
-                    creatorsEntries = filterCreatorsByName(creatorsEntries, filters.getName(), type);
-                }
-                this.creatorsResults = creatorsEntries;
-
+                creatorsEntries = searchCreator(filters, type);
                 break;
-
             default:
         }
 
@@ -227,10 +282,15 @@ public final class SearchBar {
         }
     }
 
-    // TODO JAVADOC HERE
-    public boolean SearchesCreator(User searchedCreator) {
-        for (User user : creatorsResults) {
-            if (user.getUsername().equals(searchedCreator.getUsername())) {
+    /**
+     * Searches artist/host.
+     *
+     * @param searchedCreator the searched creator.
+     * @return the result
+     */
+    public boolean searchesCreator(final User searchedCreator) {
+        for (User userIter : creatorsResults) {
+            if (userIter.getUsername().equals(searchedCreator.getUsername())) {
                 return true;
             }
         }

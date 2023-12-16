@@ -2,13 +2,12 @@ package app.user.HostFeatures;
 
 import lombok.Getter;
 
+@Getter
 public abstract class HostFeature {
-    @Getter
     private final String name;
-    @Getter
     private final String description;
 
-    public HostFeature(String name, String description) {
+    public HostFeature(final String name, final String description) {
         this.name = name;
         this.description = description;
     }

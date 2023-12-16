@@ -5,28 +5,36 @@ import app.audio.Collections.Playlist;
 import app.audio.Collections.Podcast;
 import app.audio.Files.Episode;
 import app.audio.Files.Song;
-import app.page.Page;
 import app.user.Artist;
 import app.user.Host;
 import app.user.NormalUser;
 import app.user.User;
 import app.utils.Enums;
-import fileio.input.*;
+
+import fileio.input.CommandInput;
+import fileio.input.UserInput;
+import fileio.input.SongInput;
+import fileio.input.EpisodeInput;
+import fileio.input.PodcastInput;
+
 import lombok.Getter;
-import org.apache.commons.collections.map.MultiValueMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.TreeMap;
+import java.util.Map;
+import java.util.Collections;
 
-import java.util.*;
-
-import static app.user.Artist.IsArtistInteracted;
-import static app.user.Host.IsHostInteracted;
-import static app.user.NormalUser.*;
-import static app.user.User.*;
+import static app.user.Artist.isArtistInteractedBy;
+import static app.user.Host.isHostInteractedBy;
+import static app.user.NormalUser.deleteUserFromDatabase;
+import static app.user.NormalUser.removeFollowedPlaylist;
+import static app.utils.Factories.UserFactory.createUser;
 
 /**
  * The type Admin.
  */
 public final class Admin {
-    private static Admin adminInstance = null;
     @Getter
     private static List<User> users = new ArrayList<>();
     @Getter
@@ -39,22 +47,16 @@ public final class Admin {
     private Admin() {
     }
 
-    public static Admin getInstance() {
-        if (adminInstance == null) {
-            adminInstance = new Admin();
-        }
-        return adminInstance;
-    }
-
     /**
      * Sets users.
      *
      * @param userInputList the user input list
      */
-    public void setUsers(final List<UserInput> userInputList) {
+    public static void setUsers(final List<UserInput> userInputList) {
         users = new ArrayList<>();
         for (UserInput userInput : userInputList) {
-            users.add(new NormalUser(userInput.getUsername(), userInput.getAge(), userInput.getCity()));
+            users.add(new NormalUser(userInput.getUsername(),
+                      userInput.getAge(), userInput.getCity()));
         }
     }
 
@@ -63,7 +65,7 @@ public final class Admin {
      *
      * @param songInputList the song input list
      */
-    public void setSongs(final List<SongInput> songInputList) {
+    public static void setSongs(final List<SongInput> songInputList) {
         songs = new ArrayList<>();
         for (SongInput songInput : songInputList) {
             songs.add(new Song(songInput.getName(), songInput.getDuration(), songInput.getAlbum(),
@@ -78,7 +80,7 @@ public final class Admin {
      *
      * @param podcastInputList the podcast input list
      */
-    public void setPodcasts(final List<PodcastInput> podcastInputList) {
+    public static void setPodcasts(final List<PodcastInput> podcastInputList) {
         podcasts = new ArrayList<>();
         for (PodcastInput podcastInput : podcastInputList) {
             List<Episode> episodes = new ArrayList<>();
@@ -150,7 +152,7 @@ public final class Admin {
      *
      * @param newTimestamp the new timestamp
      */
-    public void updateTimestamp(final int newTimestamp) {
+    public static void updateTimestamp(final int newTimestamp) {
         int elapsed = newTimestamp - timestamp;
         timestamp = newTimestamp;
         if (elapsed == 0) {
@@ -191,11 +193,13 @@ public final class Admin {
      */
     public static List<String> getTop5Playlists() {
         List<Playlist> sortedPlaylists = new ArrayList<>(getPlaylists());
+
         sortedPlaylists.sort(Comparator.comparingInt(Playlist::getFollowers)
-                .reversed()
-                .thenComparing(Playlist::getTimestamp, Comparator.naturalOrder()));
+                .reversed().thenComparing(Playlist::getTimestamp, Comparator.naturalOrder()));
+
         List<String> topPlaylists = new ArrayList<>();
         int count = 0;
+
         for (Playlist playlist : sortedPlaylists) {
             if (count >= LIMIT) {
                 break;
@@ -203,12 +207,16 @@ public final class Admin {
             topPlaylists.add(playlist.getName());
             count++;
         }
+
         return topPlaylists;
     }
 
+    /**
+     * An albums comparator
+     */
     static class AlbumComparator implements Comparator<Album> {
         @Override
-        public int compare(Album album1, Album album2) {
+        public int compare(final Album album1, final Album album2) {
             int likesCompare = album2.getAlbumLikes() - album1.getAlbumLikes();
             if (likesCompare == 0) {
                 likesCompare = album1.getName().compareTo(album2.getName());
@@ -246,18 +254,21 @@ public final class Admin {
         TreeMap<String, Integer> albumsLikes = new TreeMap<>();
 
         int artistsCount = 0;
-        for (int i=0; i < getUsers().size(); i++){
+        for (int i = 0; i < getUsers().size(); i++) {
             if (getUsers().get(i).getType().equals(Enums.UserType.ARTIST)) {
-                albumsLikes.put(getUsers().get(i).getUsername(),((Artist)getUsers().get(i)).getAllAlbumsLikes());
+                albumsLikes.put(getUsers().get(i).getUsername(), ((Artist) getUsers()
+                        .get(i)).getAllAlbumsLikes());
                 artistsCount++;
             }
         }
 
         List<String> sortedArtists = new ArrayList<>();
 
-        for (int i=0; i < LIMIT && i < artistsCount; i++) {
-            sortedArtists.add(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
-            albumsLikes.remove(Collections.max(albumsLikes.entrySet(), Map.Entry.comparingByValue()).getKey());
+        for (int i = 0; i < LIMIT && i < artistsCount; i++) {
+            sortedArtists.add(Collections.max(albumsLikes.entrySet(),
+                    Map.Entry.comparingByValue()).getKey());
+            albumsLikes.remove(Collections.max(albumsLikes.entrySet(),
+                    Map.Entry.comparingByValue()).getKey());
         }
 
         return sortedArtists;
@@ -266,7 +277,7 @@ public final class Admin {
     /**
      * Reset.
      */
-    public void reset() {
+    public static void reset() {
         users = new ArrayList<>();
         songs = new ArrayList<>();
         podcasts = new ArrayList<>();
@@ -275,8 +286,8 @@ public final class Admin {
     }
 
     /**
-     * Adds new user
-     * @param commandInput
+     * Adds new user in database
+     * @param commandInput the input command
      * @return message
      */
     public static String addUser(final CommandInput commandInput) {
@@ -286,20 +297,18 @@ public final class Admin {
                 return "The username " + commandInput.getUsername() + " is already taken.";
             }
         }
-
-        if (commandInput.getType().equals("artist")) {
-            Admin.users.add(new Artist(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
-        } else if (commandInput.getType().equals("host")) {
-            Admin.users.add(new Host(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
-        } else {
-            Admin.users.add(new NormalUser(commandInput.getUsername(), commandInput.getAge(), commandInput.getCity()));
-        }
+        Admin.users.add(createUser(commandInput.getType(), commandInput.getUsername(),
+                commandInput.getAge(), commandInput.getCity()));
 
         return "The username " + commandInput.getUsername() + " has been added successfully.";
     }
 
-    // TODO JAVADOC + hide if-for-if
-    public static void deleteUserPlaylists(User user, Playlist playlistIter) {
+    /**
+     * Deletes user playlists
+     * @param user          checked user
+     * @param playlistIter  searched user's playlist
+     */
+    public static void deleteUserPlaylists(final User user, final Playlist playlistIter) {
 
         if (user.getType().equals(Enums.UserType.NORMAL)) {
 
@@ -315,12 +324,16 @@ public final class Admin {
 
     }
 
-    // TODO JAVADOC + hide if-for-if
-    public static void deleteUserPlaylistsFromDatabase(NormalUser user) {
+    /**
+     * Deletes user playlists from database
+     * @param user          checked user
+     */
+    public static void deleteUserPlaylistsFromDatabase(final NormalUser user) {
 
-        for (Playlist playlistIter : user.getPlaylists()) { // TODO: ADD: ONLY IF PLAYLIST IS PUBLIC, pt a nu face iteratii degeaba
+        for (Playlist playlistIter : user.getPlaylists()) {
             for (int i = 0; i < Admin.getUsers().size(); i++) {
-                if (Admin.getUsers().get(i) != user) {
+                if (Admin.getUsers().get(i) != user
+                        && playlistIter.getVisibility().equals(Enums.Visibility.PUBLIC)) {
                     deleteUserPlaylists(Admin.getUsers().get(i), playlistIter);
                 }
             }
@@ -328,8 +341,12 @@ public final class Admin {
 
     }
 
-    // TODO JAVADOC + hide if-for-if
-    public static void deleteCreatorFromLibrary(String username, Enums.UserType type) {
+    /**
+     * Deletes creator from library
+     * @param username      given username of creator
+     * @param type          given type of creator
+     */
+    public static void deleteCreatorFromLibrary(final String username, final Enums.UserType type) {
 
         if (type.equals(Enums.UserType.ARTIST)) {
 
@@ -346,8 +363,6 @@ public final class Admin {
                     i--;
                 }
             }
-
-            // TODO - DELETE SONGS FROM LIKED SONGS ale tuturor userilor - la artist
 
             for (User user : Admin.getUsers()) {
                 if (user.getType().equals(Enums.UserType.NORMAL)) {
@@ -374,8 +389,8 @@ public final class Admin {
     }
 
     /**
-     * Removes a user from database
-     * @param commandInput
+     * Removes user from database
+     * @param commandInput input command
      * @return message
      */
     public static String deleteUser(final CommandInput commandInput) {
@@ -388,25 +403,26 @@ public final class Admin {
             }
         }
 
-        if (existsUser == false) {
+        if (!existsUser) {
             return "The username " + commandInput.getUsername() + " doesn't exist.";
         }
 
         if (getUser(commandInput.getUsername()).getType().equals(Enums.UserType.ARTIST)) {
-            if (IsArtistInteracted(commandInput.getUsername())) {
+            if (isArtistInteractedBy(commandInput.getUsername())) {
                 return commandInput.getUsername() + " can't be deleted.";
             }
             deleteCreatorFromLibrary(commandInput.getUsername(), Enums.UserType.ARTIST);
         } else if (getUser(commandInput.getUsername()).getType().equals(Enums.UserType.HOST)) {
-            if (IsHostInteracted(commandInput.getUsername())) {
+            if (isHostInteractedBy(commandInput.getUsername())) {
                 return commandInput.getUsername() + " can't be deleted.";
             }
             deleteCreatorFromLibrary(commandInput.getUsername(), Enums.UserType.HOST);
         } else if (getUser(commandInput.getUsername()).getType().equals(Enums.UserType.NORMAL)) {
-            if (((NormalUser)getUser(commandInput.getUsername())).IsNormalUserInteractedBy(commandInput.getUsername())) {
+            if (((NormalUser) getUser(commandInput.getUsername()))
+                    .isNormalUserInteractedBy(commandInput.getUsername())) {
                 return commandInput.getUsername() + " can't be deleted.";
             }
-            deleteUserPlaylistsFromDatabase(((NormalUser)getUser(commandInput.getUsername())));
+            deleteUserPlaylistsFromDatabase(((NormalUser) getUser(commandInput.getUsername())));
             deleteUserFromDatabase(commandInput.getUsername());
         }
 
@@ -415,8 +431,7 @@ public final class Admin {
 
     /**
      * Adds new song in library
-     * @param song
-     * @return message
+     * @param song song to be added in library
      */
     public static void addSong(final Song song) {
         songs.add(song);
@@ -424,17 +439,15 @@ public final class Admin {
 
     /**
      * Adds new podcast in library
-     * @param podcast
-     * @return message
+     * @param podcast podcast to be added in library
      */
     public static void addPodcast(final Podcast podcast) {
         podcasts.add(podcast);
     }
 
     /**
-     * Adds new album
-     * @param album
-     * @return message
+     * Adds new album in library
+     * @param album album to be added in library
      */
     public static void addAlbum(final Album album) {
         albums.add(album);

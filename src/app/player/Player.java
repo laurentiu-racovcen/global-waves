@@ -47,6 +47,9 @@ public final class Player {
         shuffle = false;
     }
 
+    /**
+     * Bookmarks a podcast.
+     */
     private void bookmarkPodcast() {
         if (source != null && source.getAudioFile() != null) {
             PodcastBookmark currentBookmark =
@@ -82,6 +85,11 @@ public final class Player {
         return null;
     }
 
+    /**
+     * @param collection audio collection
+     * @param bookmarks podcast bookmarks
+     * @return player source
+     */
     private static PlayerSource createPodcastSource(final AudioCollection collection,
                                                     final List<PodcastBookmark> bookmarks) {
         for (PodcastBookmark bookmark : bookmarks) {
@@ -127,7 +135,8 @@ public final class Player {
             source.generateShuffleOrder(seed);
         }
 
-        if (source.getType() == Enums.PlayerSourceType.PLAYLIST || source.getType() == Enums.PlayerSourceType.ALBUM) {
+        if (source.getType() == Enums.PlayerSourceType.PLAYLIST
+                || source.getType() == Enums.PlayerSourceType.ALBUM) {
             shuffle = !shuffle;
             if (shuffle) {
                 source.updateShuffleIndex();

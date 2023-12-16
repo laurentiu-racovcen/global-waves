@@ -1,12 +1,10 @@
 package app.user;
 
 import app.Admin;
-import app.audio.Collections.*;
+import app.audio.Collections.Podcast;
+import app.audio.Collections.PodcastOutput;
 import app.audio.Files.Episode;
-import app.audio.Files.Song;
-import app.page.HostPage;
-import app.page.Page;
-import app.user.ArtistFeatures.Event;
+import app.pages.Page;
 import app.user.HostFeatures.Announcement;
 import app.utils.Enums;
 import fileio.input.CommandInput;
@@ -19,16 +17,13 @@ import java.util.Set;
 
 import static app.Admin.getUser;
 import static app.audio.Collections.Podcast.deletePodcastFromLibrary;
-import static app.user.Artist.IsArtistInteracted;
 import static app.utils.Factories.PageFactory.createPage;
 
+@Getter
 public class Host extends User {
-    @Getter
     private ArrayList<Podcast> podcasts;
-    @Getter
-    ArrayList<Announcement> announcements;
-    @Getter
-    private EnumMap<Enums.PageType,Page> pages;
+    private ArrayList<Announcement> announcements;
+    private EnumMap<Enums.PageType, Page> pages;
 
     /**
      * Instantiates a new Host User.
@@ -46,40 +41,50 @@ public class Host extends User {
                 createPage(Enums.PageType.HOST_PAGE, this));
     }
 
-    // JAVADOC
-    public static Page getHostPage(String username) {
+    /**
+     * Gets host page.
+     *
+     * @param username  the username
+     * @return          the page
+     */
+    public static Page getHostPage(final String username) {
         for (User user : Admin.getUsers()) {
-            if(user.getUsername().equals(username)) {
-                return ((Host)user).getPages().get(Enums.PageType.HOST_PAGE);
+            if (user.getUsername().equals(username)) {
+                return ((Host) user).getPages().get(Enums.PageType.HOST_PAGE);
             }
         }
         return null;
     }
 
-    // TODO JAVADOC
-    public static boolean IsHostInteracted(final String username) {
+    /**
+     * Checks if host is interacted
+     * @param username host's username
+     * @return result
+     */
+    public static boolean isHostInteractedBy(final String username) {
         Host host = (Host) getUser(username);
         for (User user : Admin.getUsers()) {
-            if (user.getType().equals(Enums.UserType.NORMAL)) {
-                if (((NormalUser)user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)) {
-                    if (NormalUserInteractsWithHost((NormalUser) user, host)) {
-                        return true;
-                    }
-                }
+            if (user.getType().equals(Enums.UserType.NORMAL)
+                && ((NormalUser) user).getConnectionStatus().equals(Enums.ConnectionStatus.ONLINE)
+                && ((NormalUser) user).interactsWithHost(host)) {
+              return true;
             }
         }
         return false;
     }
 
     /**
-     * Add album.
+     * Add podcast.
      *
      * @param commandInput      the command
-     * @return the string
+     * @return the result string
      */
-    public String AddPodcast(final CommandInput commandInput) {
-        if (podcasts.stream().anyMatch(podcast -> podcast.getName().equals(commandInput.getName()))) {
+    public String addPodcast(final CommandInput commandInput) {
+        if (podcasts.stream().anyMatch(podcast
+                -> podcast.getName().equals(commandInput.getName()))) {
+
             return commandInput.getUsername() + " has another podcast with the same name.";
+
         } else {
             /* se verifica daca sunt duplicate in albumul citit */
 
@@ -105,8 +110,10 @@ public class Host extends User {
      * @return the message
      */
     public String addAnnouncement(final CommandInput commandInput) {
-        if (announcements.stream().anyMatch(announcement -> announcement.getName().equals(commandInput.getName()))) {
-            return commandInput.getUsername() + " has already added an announcement with this name.";
+        if (announcements.stream().anyMatch(announcement
+                -> announcement.getName().equals(commandInput.getName()))) {
+            return commandInput.getUsername()
+                    + " has already added an announcement with this name.";
         }
 
         Announcement announcement = new Announcement(commandInput.getName(),
@@ -118,7 +125,7 @@ public class Host extends User {
     }
 
     /**
-     * Adds new user
+     * Removes host announcement
      * @param commandInput
      * @return message
      */
@@ -132,7 +139,7 @@ public class Host extends User {
             }
         }
 
-        if (existsUser == false) {
+        if (!existsUser) {
             return "The username " + commandInput.getUsername() + " doesn't exist.";
         }
 
@@ -155,8 +162,8 @@ public class Host extends User {
 
 
     /**
-     * Removes artist podcast
-     * @param commandInput
+     * Removes host podcast.
+     * @param commandInput the input command
      * @return message
      */
     public String removePodcast(final CommandInput commandInput) {
@@ -174,7 +181,7 @@ public class Host extends User {
             return commandInput.getUsername() + " doesn't have a podcast with the given name.";
         }
 
-        if (podcast.IsPodcastInteracted()){
+        if (podcast.isPodcastInteracted()) {
             return commandInput.getUsername() + " can't delete this podcast.";
         }
 
@@ -195,6 +202,4 @@ public class Host extends User {
         }
         return podcastOutputs;
     }
-
-
 }

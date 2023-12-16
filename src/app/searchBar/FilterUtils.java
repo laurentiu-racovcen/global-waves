@@ -130,15 +130,15 @@ public final class FilterUtils {
     }
 
     /**
-     * Filter by Users list.
+     * Filter by name.
      *
      * @param entries the entries
      * @param name   the name
+     * @param type   the type
      * @return the list
      */
     public static List<User> filterCreatorsByName(final List<User> entries,
                                    final String name, final String type) {
-
         return filterCreators(entries, name, type);
     }
 
@@ -177,6 +177,14 @@ public final class FilterUtils {
         return result;
     }
 
+    /**
+     * Filters given creators by name.
+     *
+     * @param entries   the entries
+     * @param name      name
+     * @param type      type
+     * @return the list
+     */
     private static List<User> filterCreators(final List<User> entries,
                                              final String name,
                                              final String type) {
@@ -184,18 +192,19 @@ public final class FilterUtils {
 
         if (type.equals("artist")) {
             for (User entry : entries) {
-                if (entry.getUsername().startsWith(name) && entry.getType().equals(Enums.UserType.ARTIST)) {
+                if (entry.getUsername().startsWith(name)
+                        && entry.getType().equals(Enums.UserType.ARTIST)) {
                     result.add(entry);
                 }
             }
         } else if (type.equals("host")) {
             for (User entry : entries) {
-                if (entry.getUsername().startsWith(name) && entry.getType().equals(Enums.UserType.HOST)) {
+                if (entry.getUsername().startsWith(name)
+                        && entry.getType().equals(Enums.UserType.HOST)) {
                     result.add(entry);
                 }
             }
         }
-
 
         return result;
     }
